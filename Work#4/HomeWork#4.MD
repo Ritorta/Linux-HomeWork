@@ -217,7 +217,7 @@ fox@love-linux:/$ crontab -l
 .# For example, you can run a backup of all your user accounts
 .# at 5 a.m every week with:
 .# 0 5 * * 1 tar -zcf /var/backups/home.tgz /home/
-0 18 * * 1 tar -zcf /var/backups/home.tgz /home/
+0 18 * * 1 tar -zcf /var/backups/home_fox.tgz /home/fox
 .#
 .# For more information see the manual pages of crontab(5) and cron(8)
 .#
