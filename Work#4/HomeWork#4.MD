@@ -44,6 +44,7 @@ Share images, automate workflows, and more with a free Docker ID:
 
 For more examples and ideas, visit:
  https://docs.docker.com/get-started/
+fox@love-linux:~$ 
 
 2. Установить и удалить deb-пакет с помощью dpkg.
 fox@love-linux:~/Downloads$ ll
@@ -95,6 +96,96 @@ fox@love-linux:/etc$
 
 
 5. *Подключить PPA-репозиторий на выбор. Установить из него пакет. Удалить PPA из системы.
+fox@love-linux:/$ sudo add-apt-repository ppa:ondrej/php
+PPA publishes dbgsym, you may need to include 'main/debug' component
+Repository: 'deb https://ppa.launchpadcontent.net/ondrej/php/ubuntu/ jammy main'
+Description:
+Co-installable PHP versions: PHP 5.6, PHP 7.x, PHP 8.x and most requested extensions are included. Only Supported Versions of PHP (http://php.net/supported-versions.php) for Supported Ubuntu Releases (https://wiki.ubuntu.com/Releases) are provided. Don't ask for end-of-life PHP versions or Ubuntu release, they won't be provided.
+
+Debian oldstable and stable packages are provided as well: https://deb.sury.org/#debian-dpa
+
+You can get more information about the packages at https://deb.sury.org
+
+IMPORTANT: The <foo>-backports is now required on older Ubuntu releases.
+
+BUGS&FEATURES: This PPA now has a issue tracker:
+https://deb.sury.org/#bug-reporting
+
+CAVEATS:
+1. If you are using php-gearman, you need to add ppa:ondrej/pkg-gearman
+2. If you are using apache2, you are advised to add ppa:ondrej/apache2
+3. If you are using nginx, you are advised to add ppa:ondrej/nginx-mainline
+   or ppa:ondrej/nginx
+
+PLEASE READ: If you like my work and want to give me a little motivation, please consider donating regularly: https://donate.sury.org/
+
+WARNING: add-apt-repository is broken with non-UTF-8 locales, see
+https://github.com/oerdnj/deb.sury.org/issues/56 for workaround:
+
+# LC_ALL=C.UTF-8 add-apt-repository ppa:ondrej/php
+More info: https://launchpad.net/~ondrej/+archive/ubuntu/php
+Adding repository.
+Press [ENTER] to continue or Ctrl-c to cancel.
+Adding deb entry to /etc/apt/sources.list.d/ondrej-ubuntu-php-jammy.list
+Adding disabled deb-src entry to /etc/apt/sources.list.d/ondrej-ubuntu-php-jammy.list
+Adding key to /etc/apt/trusted.gpg.d/ondrej-ubuntu-php.gpg with fingerprint 14AA40EC0831756756D7F66C4F4EA0AAE5267A6C
+Get:1 http://security.ubuntu.com/ubuntu jammy-security InRelease [110 kB]
+Hit:2 http://kz.archive.ubuntu.com/ubuntu jammy InRelease
+Hit:3 https://download.docker.com/linux/ubuntu jammy InRelease
+Get:4 http://kz.archive.ubuntu.com/ubuntu jammy-updates InRelease [119 kB]    
+Get:5 https://ppa.launchpadcontent.net/ondrej/php/ubuntu jammy InRelease [23.9 kB]       
+Get:6 https://ppa.launchpadcontent.net/ondrej/php/ubuntu jammy/main i386 Packages [27.9 kB]
+Hit:7 http://kz.archive.ubuntu.com/ubuntu jammy-backports InRelease
+Get:8 https://ppa.launchpadcontent.net/ondrej/php/ubuntu jammy/main amd64 Packages [120 kB]
+Get:9 https://ppa.launchpadcontent.net/ondrej/php/ubuntu jammy/main Translation-en [36.6 kB]
+Fetched 438 kB in 2s (241 kB/s)  
+Reading package lists... Done
+
+fox@love-linux:/$ apt list -a php
+Listing... Done
+php/jammy,jammy 2:8.2+93+ubuntu22.04.1+deb.sury.org+3 all
+php/jammy,jammy 2:8.1+92ubuntu1 all
+
+fox@love-linux:/$ sudo add-apt-repository --remove ppa:ondrej/php
+PPA publishes dbgsym, you may need to include 'main/debug' component
+Repository: 'deb https://ppa.launchpadcontent.net/ondrej/php/ubuntu/ jammy main'
+Description:
+Co-installable PHP versions: PHP 5.6, PHP 7.x, PHP 8.x and most requested extensions are included. Only Supported Versions of PHP (http://php.net/supported-versions.php) for Supported Ubuntu Releases (https://wiki.ubuntu.com/Releases) are provided. Don't ask for end-of-life PHP versions or Ubuntu release, they won't be provided.
+
+Debian oldstable and stable packages are provided as well: https://deb.sury.org/#debian-dpa
+
+You can get more information about the packages at https://deb.sury.org
+
+IMPORTANT: The <foo>-backports is now required on older Ubuntu releases.
+
+BUGS&FEATURES: This PPA now has a issue tracker:
+https://deb.sury.org/#bug-reporting
+
+CAVEATS:
+1. If you are using php-gearman, you need to add ppa:ondrej/pkg-gearman
+2. If you are using apache2, you are advised to add ppa:ondrej/apache2
+3. If you are using nginx, you are advised to add ppa:ondrej/nginx-mainline
+   or ppa:ondrej/nginx
+
+PLEASE READ: If you like my work and want to give me a little motivation, please consider donating regularly: https://donate.sury.org/
+
+WARNING: add-apt-repository is broken with non-UTF-8 locales, see
+https://github.com/oerdnj/deb.sury.org/issues/56 for workaround:
+
+# LC_ALL=C.UTF-8 add-apt-repository ppa:ondrej/php
+More info: https://launchpad.net/~ondrej/+archive/ubuntu/php
+Removing repository.
+Press [ENTER] to continue or Ctrl-c to cancel.
+Disabling deb entry in /etc/apt/sources.list.d/ondrej-ubuntu-php-jammy.list
+Removing disabled deb entry from /etc/apt/sources.list.d/ondrej-ubuntu-php-jammy.list
+Removing disabled deb-src entry from /etc/apt/sources.list.d/ondrej-ubuntu-php-jammy.list
+Hit:1 http://security.ubuntu.com/ubuntu jammy-security InRelease
+Hit:2 http://kz.archive.ubuntu.com/ubuntu jammy InRelease
+Hit:3 https://download.docker.com/linux/ubuntu jammy InRelease
+Hit:4 http://kz.archive.ubuntu.com/ubuntu jammy-updates InRelease
+Hit:5 http://kz.archive.ubuntu.com/ubuntu jammy-backports InRelease
+Reading package lists... Done
+fox@love-linux:/$ 
 
 6. *Создать задачу резервного копирования (tar) домашнего каталога пользователя. Реализовать с использованием пользовательских crontab-файлов.
 fox@love-linux:/$ crontab -e
