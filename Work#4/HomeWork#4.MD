@@ -37,6 +37,14 @@ Reading state information... Done
 fox@love-linux:~$ 
 
 3. Установить и удалить snap-пакет.
+fox@love-linux:~$ snap search steam
+Name                       Version     Publisher        Notes  Summary
+steam                      1.0.0.78    canonical✓       -      Launcher for the Steam software distribution service
+fox@love-linux:~$ sudo snap install steam
+steam 1.0.0.78 from Canonical✓ installed
+fox@love-linux:~$ sudo snap remove steam
+steam removed
+fox@love-linux:~$ 
 
 4. Добавить задачу для выполнения каждые 3 минуты (создание директории, запись в файл).
 
