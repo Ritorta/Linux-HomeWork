@@ -1,8 +1,14 @@
-Урок 4. Подключение сторонних репозиториев, ручная установка пакетов
+# Урок 4. Подключение сторонних репозиториев, ручная установка пакетов
 
-Задание
+Результат
 
-1. Подключить дополнительный репозиторий на выбор: Docker, Nginx, Oracle MySQL. Установить любой пакет из этого репозитория.
+Текст команд, которые применялись при выполнении задания.
+Присылаем в формате текстового документа: задание и команды для решения (без вывода).
+Формат — PDF (один файл на все задания).
+
+## Задание
+
+### 1. Подключить дополнительный репозиторий на выбор: Docker, Nginx, Oracle MySQL. Установить любой пакет из этого репозитория.
 fox@love-linux:/$ sudo apt-get update
 fox@love-linux:/$ sudo apt-get install ca-certificates curl gnupg
 fox@love-linux:/$ sudo install -m 0755 -d /etc/apt/keyrings01
@@ -46,7 +52,7 @@ For more examples and ideas, visit:
  https://docs.docker.com/get-started/
 fox@love-linux:~$ 
 
-2. Установить и удалить deb-пакет с помощью dpkg.
+### 2. Установить и удалить deb-пакет с помощью dpkg.
 fox@love-linux:~/Downloads$ ll
 total 90344
 drwxr-xr-x  2 fox fox     4096 Nov 30 16:03 ./
@@ -78,7 +84,7 @@ Reading state information... Done
 0 upgraded, 0 newly installed, 0 to remove and 2 not upgraded.
 fox@love-linux:~$ 
 
-3. Установить и удалить snap-пакет.
+### 3. Установить и удалить snap-пакет.
 fox@love-linux:~$ snap search steam
 Name                       Version     Publisher        Notes  Summary
 steam                      1.0.0.78    canonical✓       -      Launcher for the Steam software distribution service
@@ -88,14 +94,14 @@ fox@love-linux:~$ sudo snap remove steam
 steam removed
 fox@love-linux:~$ 
 
-4. Добавить задачу для выполнения каждые 3 минуты (создание директории, запись в файл).
+### 4. Добавить задачу для выполнения каждые 3 минуты (создание директории, запись в файл).
 fox@love-linux:~$ cd /etc
 fox@love-linux:/etc$
 
 
 
 
-5. *Подключить PPA-репозиторий на выбор. Установить из него пакет. Удалить PPA из системы.
+### 5. *Подключить PPA-репозиторий на выбор. Установить из него пакет. Удалить PPA из системы.
 fox@love-linux:/$ sudo add-apt-repository ppa:ondrej/php
 PPA publishes dbgsym, you may need to include 'main/debug' component
 Repository: 'deb https://ppa.launchpadcontent.net/ondrej/php/ubuntu/ jammy main'
@@ -122,7 +128,7 @@ PLEASE READ: If you like my work and want to give me a little motivation, please
 WARNING: add-apt-repository is broken with non-UTF-8 locales, see
 https://github.com/oerdnj/deb.sury.org/issues/56 for workaround:
 
-# LC_ALL=C.UTF-8 add-apt-repository ppa:ondrej/php
+.# LC_ALL=C.UTF-8 add-apt-repository ppa:ondrej/php
 More info: https://launchpad.net/~ondrej/+archive/ubuntu/php
 Adding repository.
 Press [ENTER] to continue or Ctrl-c to cancel.
@@ -172,7 +178,7 @@ PLEASE READ: If you like my work and want to give me a little motivation, please
 WARNING: add-apt-repository is broken with non-UTF-8 locales, see
 https://github.com/oerdnj/deb.sury.org/issues/56 for workaround:
 
-# LC_ALL=C.UTF-8 add-apt-repository ppa:ondrej/php
+.# LC_ALL=C.UTF-8 add-apt-repository ppa:ondrej/php
 More info: https://launchpad.net/~ondrej/+archive/ubuntu/php
 Removing repository.
 Press [ENTER] to continue or Ctrl-c to cancel.
@@ -187,33 +193,33 @@ Hit:5 http://kz.archive.ubuntu.com/ubuntu jammy-backports InRelease
 Reading package lists... Done
 fox@love-linux:/$ 
 
-6. *Создать задачу резервного копирования (tar) домашнего каталога пользователя. Реализовать с использованием пользовательских crontab-файлов.
+### 6. *Создать задачу резервного копирования (tar) домашнего каталога пользователя. Реализовать с использованием пользовательских crontab-файлов.
 fox@love-linux:/$ crontab -e
 no crontab for fox - using an empty one
 crontab: installing new crontab
 fox@love-linux:/$ crontab -l
-# Edit this file to introduce tasks to be run by cron.
-#
-# Each task to run has to be defined through a single line
-# indicating with different fields when the task will be run
-# and what command to run for the task
-#
-# To define the time you can provide concrete values for
-# minute (m), hour (h), day of month (dom), month (mon),
-# and day of week (dow) or use '*' in these fields (for 'any').
-#
-# Notice that tasks will be started based on the cron's system
-# daemon's notion of time and timezones.
-#
-# Output of the crontab jobs (including errors) is sent through
-# email to the user the crontab file belongs to (unless redirected).
-#
-# For example, you can run a backup of all your user accounts
-# at 5 a.m every week with:
-# 0 5 * * 1 tar -zcf /var/backups/home.tgz /home/
+.# Edit this file to introduce tasks to be run by cron.
+.#
+.# Each task to run has to be defined through a single line
+.# indicating with different fields when the task will be run
+.# and what command to run for the task
+.#
+.# To define the time you can provide concrete values for
+.# minute (m), hour (h), day of month (dom), month (mon),
+.# and day of week (dow) or use '*' in these fields (for 'any').
+.#
+.# Notice that tasks will be started based on the cron's system
+.# daemon's notion of time and timezones.
+.#
+.# Output of the crontab jobs (including errors) is sent through
+.# email to the user the crontab file belongs to (unless redirected).
+.#
+.# For example, you can run a backup of all your user accounts
+.# at 5 a.m every week with:
+.# 0 5 * * 1 tar -zcf /var/backups/home.tgz /home/
 0 18 * * 1 tar -zcf /var/backups/home.tgz /home/
-#
-# For more information see the manual pages of crontab(5) and cron(8)
-#
-# m h  dom mon dow   command
+.#
+.# For more information see the manual pages of crontab(5) and cron(8)
+.#
+.# m h  dom mon dow   command
 fox@love-linux:/$
