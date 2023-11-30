@@ -1,0 +1,258 @@
+Урок 3. Права доступа и безопасность
+
+Результат
+
+Текст команд, которые применялись при выполнении задания.
+Присылаем в формате текстового документа: задание и команды для решения (без вывода).
+Формат — PDF (один файл на все задания).
+
+Задание
+
+1. Создать два произвольных файла.
+Первому присвоить права на чтение и запись для владельца и группы, только на чтение — для всех.
+Второму присвоить права на чтение и запись только для владельца. Сделать это в численном и символьном виде.
+
+fox@love-linux:~/HW3$ touch file1 file2
+fox@love-linux:~/HW3$ ls -l
+-rw-rw-r--  1 fox fox    0 Nov 24 15:11 file1
+-rw-rw-r--  1 fox fox    0 Nov 24 15:12 file2
+
+fox@love-linux:~/HW3$ chmod u=rw,g=rw,o=r file1
+fox@love-linux:~/HW3$ chmod u=rw,g=,o= file2
+fox@love-linux:~/HW3$ ls -l
+total 0
+-rw-rw-r-- 1 fox fox 0 Nov 24 15:11 file1
+-rw------- 1 fox fox 0 Nov 24 15:12 file2
+
+fox@love-linux:~/HW3$ chmod 664 file1
+fox@love-linux:~/HW3$ chmod 600 file2
+fox@love-linux:~/HW3$ ls -l
+total 0
+-rw-rw-r-- 1 fox fox 0 Nov 24 15:11 file1
+-rw------- 1 fox fox 0 Nov 24 15:12 file2
+
+
+1-2. Управление пользователями:
+	* создать пользователя, используя утилиту useradd и adduser;
+	* удалить пользователя, используя утилиту userdel.
+
+fox@love-linux:~/HW3$ sudo useradd Ritorta
+fox@love-linux:/$ sudo adduser mixx
+Adding user `mixx' ...
+Adding new group `mixx' (1003) ...
+Adding new user `mixx' (1002) with group `mixx' ...
+Creating home directory `/home/mixx' ...
+Copying files from `/etc/skel' ...
+New password:
+BAD PASSWORD: The password is shorter than 8 characters
+Retype new password:
+passwd: password updated successfully
+Changing the user information for mixx
+Enter the new value, or press ENTER for the default
+        Full Name []: Mix333
+        Room Number []: 9,99
+        Work Phone []: 455555
+        Home Phone []: 112
+        Other []: Pony
+chfn: invalid room number: '9,99'
+adduser: `/bin/chfn mixx' returned error code 1. Exiting.
+
+fox@love-linux:/$ tail /etc/passwd
+geoclue:x:124:131::/var/lib/geoclue:/usr/sbin/nologin
+pulse:x:125:132:PulseAudio daemon,,,:/run/pulse:/usr/sbin/nologin
+gnome-initial-setup:x:126:65534::/run/gnome-initial-setup/:/bin/false
+hplip:x:127:7:HPLIP system user,,,:/run/hplip:/bin/false
+gdm:x:128:134:Gnome Display Manager:/var/lib/gdm3:/bin/false
+fox:x:1000:1000:Ritorta,,,:/home/fox:/bin/bash
+sshd:x:129:65534::/run/sshd:/usr/sbin/nologin
+vboxadd:x:999:1::/var/run/vboxadd:/bin/false
+Ritorta:x:1001:1002::/home/Ritorta:/bin/sh
+mixx:x:1002:1003::/home/mixx:/bin/bash
+
+fox@love-linux:/$ sudo userdel mixx
+fox@love-linux:/$ tail /etc/passwd
+colord:x:123:130:colord colour management daemon,,,:/var/lib/colord:/usr/sbin/nologin
+geoclue:x:124:131::/var/lib/geoclue:/usr/sbin/nologin
+pulse:x:125:132:PulseAudio daemon,,,:/run/pulse:/usr/sbin/nologin
+gnome-initial-setup:x:126:65534::/run/gnome-initial-setup/:/bin/false
+hplip:x:127:7:HPLIP system user,,,:/run/hplip:/bin/false
+gdm:x:128:134:Gnome Display Manager:/var/lib/gdm3:/bin/false
+fox:x:1000:1000:Ritorta,,,:/home/fox:/bin/bash
+sshd:x:129:65534::/run/sshd:/usr/sbin/nologin
+vboxadd:x:999:1::/var/run/vboxadd:/bin/false
+Ritorta:x:1001:1002::/home/Ritorta:/bin/sh
+fox@love-linux:/$
+
+1-3. Управление группами:
+
+    создать группу с использованием утилит groupadd и addgroup;
+    попрактиковаться в смене групп у пользователей;
+    добавить пользователя в группу, не меняя основной;
+	
+fox@love-linux:/$ sudo groupadd horse
+fox@love-linux:/$ sudo addgroup pony
+Adding group `pony' (GID 1004) ...
+Done.
+
+fox@love-linux:~$ tail /etc/group
+pulse-access:x:133:
+gdm:x:134:
+lxd:x:135:fox
+fox:x:1000:
+sambashare:x:136:fox
+vboxsf:x:999:fox
+testuser:x:1001:
+Ritorta:x:1002:
+horse:x:1003:
+pony:x:1004:
+
+fox@love-linux:~$ id
+uid=1000(fox) gid=1000(fox) groups=1000(fox),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),122(lpadmin),135(lxd),136(sambashare),999(vboxsf)
+fox@love-linux:~$ id -G
+1000 4 24 27 30 46 122 135 136 999
+fox@love-linux:~$ groups fox
+fox : fox adm cdrom sudo dip plugdev lpadmin lxd sambashare vboxsf
+
+fox@love-linux:~$ sudo usermod -a -G plugdev Ritorta
+fox@love-linux:~$ id Ritorta
+uid=1001(Ritorta) gid=1005(Ritorta) groups=1005(Ritorta),46(plugdev)
+fox@love-linux:~$ sudo usermod -g fox Ritorta
+fox@love-linux:~$ id Ritorta
+uid=1001(Ritorta) gid=1000(fox) groups=1000(fox),46(plugdev)
+fox@love-linux:~$ sudo usermod -g Ritorta Ritorta
+fox@love-linux:~$ id Ritorta
+uid=1001(Ritorta) gid=1005(Ritorta) groups=1005(Ritorta),46(plugdev)
+fox@love-linux:/$
+
+1-4. Назначить новых владельца и группу для директории целиком.
+
+fox@love-linux:~$ cd HW3
+fox@love-linux:~/HW3$ ll
+total 8
+drwxrwxr-x  2 fox fox 4096 Nov 24 15:12 ./
+drwxr-x--- 17 fox fox 4096 Nov 24 16:10 ../
+-rw-rw-r--  1 fox fox    0 Nov 24 15:11 file1
+-rw-------  1 fox fox    0 Nov 24 15:12 file2
+
+fox@love-linux:~/HW3$ sudo chown root file1
+fox@love-linux:~/HW3$ ll
+total 8
+drwxrwxr-x  2 fox  fox 4096 Nov 24 15:12 ./
+drwxr-x--- 17 fox  fox 4096 Nov 24 16:10 ../
+-rw-rw-r--  1 root fox    0 Nov 24 15:11 file1
+-rw-------  1 fox  fox    0 Nov 24 15:12 file2
+fox@love-linux:~/HW3$ sudo chown :root file2
+fox@love-linux:~/HW3$ ll
+total 8
+drwxrwxr-x  2 fox  fox  4096 Nov 24 15:12 ./
+drwxr-x--- 17 fox  fox  4096 Nov 24 16:10 ../
+-rw-rw-r--  1 root fox     0 Nov 24 15:11 file1
+-rw-------  1 fox  root    0 Nov 24 15:12 file2
+
+fox@love-linux:~/HW3$ cd ..
+fox@love-linux:~$ sudo chown -R Ritorta:Ritorta HW3
+fox@love-linux:~$ cd HW3
+fox@love-linux:~/HW3$ ll
+total 8
+drwxrwxr-x  2 Ritorta Ritorta 4096 Nov 24 15:12 ./
+drwxr-x--- 17 fox     fox     4096 Nov 24 16:10 ../
+-rw-rw-r--  1 Ritorta Ritorta    0 Nov 24 15:11 file1
+-rw-------  1 Ritorta Ritorta    0 Nov 24 15:12 file2
+fox@love-linux:~/HW3$
+
+2. Создать пользователя с правами суперпользователя. Сделать так, чтобы sudo не требовал пароль для выполнения команд.
+
+fox@love-linux:~/HW3$ sudo visudo
+
+# See sudoers(5) for more information on "@include" directives:
+
+@includedir /etc/sudoers.d
+
+fox     ALL=(ALL:ALL) NOPASSWD:ALL
+
+3. Дополнительные (необязательные) задания
+
+3-1. Используя дополнительные материалы, выдать одному из созданных пользователей право на выполнение ряда команд, требующих прав суперпользователя (команды выбираем на своё усмотрение).
+
+fox@love-linux:~/HW3$ sudo visudo
+
+# See sudoers(5) for more information on "@include" directives:
+
+@includedir /etc/sudoers.d
+
+Ritorta     ALL=(ALL:ALL) ALL
+
+3-2. Создать группу developer и нескольких пользователей, входящих в неё.
+Создать директорию для совместной работы.
+Сделать так, чтобы созданные одними пользователями файлы могли изменять другие пользователи этой группы.
+
+fox@love-linux:~$ sudo groupadd developer
+fox@love-linux:~$ sudo useradd user1
+fox@love-linux:~$ sudo useradd user2
+
+fox@love-linux:~$ id group user1
+fox@love-linux:~$ tail -3 /etc/group
+pony:x:1004:
+Ritorta:x:1005:fox
+developer:x:1006:
+
+fox@love-linux:~$ sudo useradd user1
+fox@love-linux:~$ sudo useradd user2
+fox@love-linux:~$ id group user1
+id: ‘group’: no such user
+uid=1002(user1) gid=1002(user1) groups=1002(user1)
+fox@love-linux:~$ id group user2
+id: ‘group’: no such user
+uid=1003(user2) gid=1007(user2) groups=1007(user2)
+
+fox@love-linux:~$ sudo usermod -a -G developer user1
+fox@love-linux:~$ sudo usermod -a -G developer user2
+fox@love-linux:~$ id group user1
+id: ‘group’: no such user
+uid=1002(user1) gid=1002(user1) groups=1002(user1),1006(developer)
+fox@love-linux:~$ id group user2
+id: ‘group’: no such user
+uid=1003(user2) gid=1007(user2) groups=1007(user2),1006(developer)
+
+fox@love-linux:~$ mkdir dev
+fox@love-linux:~$ sudo chown -R developer dev
+fox@love-linux:~$ sudo chmod -R 2775 dev
+fox@love-linux:~$
+
+3-3. Создать в директории для совместной работы поддиректорию для обмена файлами, но чтобы удалять файлы могли только их создатели.
+
+fox@love-linux:~$ ls -l /
+total 2191440
+lrwxrwxrwx   1 root root          7 Nov 16 14:36 bin -> usr/bin
+drwxr-xr-x   4 root root       4096 Nov 22 23:57 boot
+drwxrwxr-x   2 root root       4096 Nov 16 14:38 cdrom
+drwxr-xr-x  19 root root       4200 Nov 27 17:07 dev
+
+fox@love-linux:~$ sudo chmod +t /dev
+fox@love-linux:~$ ls -l /
+total 2191440
+lrwxrwxrwx   1 root root          7 Nov 16 14:36 bin -> usr/bin
+drwxr-xr-x   4 root root       4096 Nov 22 23:57 boot
+drwxrwxr-x   2 root root       4096 Nov 16 14:38 cdrom
+drwxr-xr-t  19 root root       4200 Nov 27 17:07 dev
+fox@love-linux:~$
+
+3-4. Создать директорию, в которой есть несколько файлов.
+Сделать так, чтобы открыть файлы можно было, только зная имя файла, а через ls список файлов посмотреть было нельзя.
+
+fox@love-linux:~/dev$ ll
+total 24
+drwxrwsr-x  2 fox developer 4096 Nov 27 17:22 ./
+drwxr-x--- 17 fox fox       4096 Nov 27 17:08 ../
+-rwxrwsr-x  1 fox fox          0 Nov 27 17:21 123*
+-rw-rw-r--  1 fox developer    3 Nov 27 17:22 ijh
+-rwxrwsr-x  1 fox developer   12 Nov 24 17:52 Test1*
+-rwxrwsr-x  1 fox developer   12 Nov 24 17:53 Test2*
+-rwxrwsr-x  1 fox developer   12 Nov 24 17:53 Test3*
+
+fox@love-linux:~$ sudo chmod -R 2333 dev
+
+fox@love-linux:~$ cd dev
+fox@love-linux:~/dev$ ll
+ls: cannot open directory '.': Permission denied
+fox@love-linux:~/dev$
