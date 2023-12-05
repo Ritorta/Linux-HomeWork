@@ -59,9 +59,16 @@ fox@love-linux:~$
 
 Выполнение:
 
+sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+
 ### 3. Запретить любой входящий трафик с IP 3.4.5.6.
 
 Выполнение:
+
+fox@love-linux:~$ sudo iptables -A INPUT -s 3.4.5.6 -j DROP
+fox@love-linux:~$ 
 
 ### 4*. Запросы на порт 8090 перенаправлять на порт 80 (на этом же сервере).
 
