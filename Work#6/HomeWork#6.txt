@@ -48,6 +48,33 @@ fox@love-linux:/etc/nginx/sites-enabled$
 
 ### 2. Установить Apache. Настроить обработку PHP. Добиться одновременной работы с Nginx.
 
+Выполнение:
+
+fox@love-linux:/etc/nginx/sites-enabled$ cd
+fox@love-linux:~$ sudo apt install apache2
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+apache2 is already the newest version (2.4.52-1ubuntu4.7).
+fox@love-linux:~$ cd /etc/apache2
+fox@love-linux:/etc/apache2$ ll
+-rw-r--r--   1 root root  7224 Oct 26 19:44 apache2.conf
+drwxr-xr-x   2 root root 12288 Dec  4 16:22 mods-available/
+drwxr-xr-x   2 root root  4096 Dec  4 16:22 mods-enabled/
+fox@love-linux:/etc/apache2/sites-enabled$ ll
+lrwxrwxrwx 1 root root   35 Dec  4 14:53 000-default.conf -> ../sites-available/000-default.conf
+fox@love-linux:/etc/apache2/sites-enabled$ sudo nano 000-default.conf
+<VirtualHost *:8080>
+fox@love-linux:/$ apache2 -t
+AH00558: apache2:Could not reliably determine the server's fully qualified domain name, using 127.0.1.1. Set the 'ServerName' directive globally to suppress this message
+Syntax OK
+fox@love-linux:/$ sudo nano /etc/apache2/apache2.conf
+# vim: syntax=apache ts=4 sw=4 sts=4 sr noet
+ServerName 127.0.1.1
+fox@love-linux:/$ apache2 -t
+Syntax OK
+fox@love-linux:/$
+
 ### 3. Настроить схему обратного прокси для Nginx (динамика - на Apache).
 
 ### 4. Установить MySQL. Создать новую базу данных и таблицу в ней.
