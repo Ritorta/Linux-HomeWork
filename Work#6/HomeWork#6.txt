@@ -26,6 +26,8 @@ drwxr-xr-x   2 root root  4096 Dec  4 16:36 sites-enabled/
 fox@love-linux:/etc/nginx$ cd sites-enabled
 fox@love-linux:/etc/nginx/sites-enabled$ ll
 lrwxrwxrwx 1 root root   34 Nov 27 22:01 default -> /etc/nginx/sites-available/default
+fox@love-linux:/$ sudo nano /etc/nginx/sites-enabled/default
+
 server {
         listen 80 default_server;
         listen [::]:80 default_server;
@@ -37,7 +39,7 @@ server {
         location / {
                 # First attempt to serve request as file, then
                 # as directory, then fall back to displaying a 404.
-                # try_files $uri $uri/ =404;               
+                try_files $uri $uri/ =404;               
         }
     }
 
@@ -64,6 +66,7 @@ drwxr-xr-x   2 root root  4096 Dec  4 16:22 mods-enabled/
 fox@love-linux:/etc/apache2/sites-enabled$ ll
 lrwxrwxrwx 1 root root   35 Dec  4 14:53 000-default.conf -> ../sites-available/000-default.conf
 fox@love-linux:/etc/apache2/sites-enabled$ sudo nano 000-default.conf
+
 <VirtualHost *:8080>
 fox@love-linux:/$ apache2 -t
 AH00558: apache2:Could not reliably determine the server's fully qualified domain name, using 127.0.1.1. Set the 'ServerName' directive globally to suppress this message
@@ -76,6 +79,27 @@ Syntax OK
 fox@love-linux:/$
 
 ### 3. Настроить схему обратного прокси для Nginx (динамика - на Apache).
+
+fox@love-linux:/$ sudo nano /etc/nginx/sites-enabled/default
+
+server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+
+        root /var/www/html;
+
+        server_name site.ru www.site.ru;
+
+        location / {
+                # First attempt to serve request as file, then
+                # as directory, then fall back to displaying a 404.
+                # try_files $uri $uri/ =404;  
+                proxy_pass http://localhost:8080;
+                proxy_set_header Host $host;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Real-IP $remote_addr;             
+        }
+    }
 
 ### 4. Установить MySQL. Создать новую базу данных и таблицу в ней.
 
