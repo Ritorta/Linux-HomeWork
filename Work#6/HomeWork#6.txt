@@ -10,6 +10,42 @@
 
 ### 1. Установить Nginx и настроить его на работу с PHP-FPM.
 
+Выполнение:
+
+fox@love-linux:~$ sudo apt install nginx
+[sudo] password for fox: 
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+nginx is already the newest version (1.18.0-6ubuntu14.4).
+fox@love-linux:~$ sudo apt install nginx
+fox@love-linux:/etc/nginx$ ll
+-rw-r--r--   1 root root  1447 May 30  2023 nginx.conf
+drwxr-xr-x   2 root root  4096 Dec  4 10:50 sites-available/
+drwxr-xr-x   2 root root  4096 Dec  4 16:36 sites-enabled/
+fox@love-linux:/etc/nginx$ cd sites-enabled
+fox@love-linux:/etc/nginx/sites-enabled$ ll
+lrwxrwxrwx 1 root root   34 Nov 27 22:01 default -> /etc/nginx/sites-available/default
+server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+
+        root /var/www/html;
+
+        server_name site.ru www.site.ru;
+
+        location / {
+                # First attempt to serve request as file, then
+                # as directory, then fall back to displaying a 404.
+                # try_files $uri $uri/ =404;               
+        }
+    }
+
+fox@love-linux:/etc/nginx/sites-enabled$ sudo nginx -t
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+fox@love-linux:/etc/nginx/sites-enabled$
+
 ### 2. Установить Apache. Настроить обработку PHP. Добиться одновременной работы с Nginx.
 
 ### 3. Настроить схему обратного прокси для Nginx (динамика - на Apache).
