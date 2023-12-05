@@ -80,6 +80,8 @@ fox@love-linux:/$
 
 ### 3. Настроить схему обратного прокси для Nginx (динамика - на Apache).
 
+Выполнение:
+
 fox@love-linux:/$ sudo nano /etc/nginx/sites-enabled/default
 
 server {
@@ -102,6 +104,46 @@ server {
     }
 
 ### 4. Установить MySQL. Создать новую базу данных и таблицу в ней.
+
+Выполнение:
+
+fox@love-linux:/$ sudo apt install mysql-server
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+mysql-server is already the newest version (8.0.35-0ubuntu0.22.04.1).
+fox@love-linux:/$ sudo mysql
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 8
+Server version: 8.0.35-0ubuntu0.22.04.1 (Ubuntu)
+mysql> CREATE DATABASE Ritorta;
+Query OK, 1 row affected (0.01 sec)
+mysql> SHOW BATABASES;
++--------------------+
+| Database           |
++--------------------+
+| Ritorta            |
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+5 rows in set (0.00 sec)
+mysql> USE Ritorta;
+Database changed
+mysql> CREATE TABLE Horse(g TEXT);
+Query OK, 0 rows affected (0.02 sec)
+mysql> INSERT INTO Horse (g) VALUES (1),(2),('Good horse');
+mysql> SELECT * FROM Horse;
++------------+
+| g          |
++------------+
+| 1          |
+| 2          |
+| Good horse |
++------------+
+3 rows in set (0.00 sec)
+
 
 ### 5*. Установить пакет phpmyadmin и запустить его веб-интерфейс для управления MySQL.
 
