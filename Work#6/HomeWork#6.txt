@@ -162,8 +162,34 @@ fox@love-linux:/$ sudo ln -s /etc/phpmyadmin/apache.conf /etc/apache2/conf-avail
 fox@love-linux:/$ sudo a2enconf phpmyadmin.conf
 fox@love-linux:/$ sudo systemctl reload apache2
 
-127.0.0.1/phpmyadmin
+localhost:8080/phpmyadmin
 
 ### 6*. Настроить схему балансировки трафика между несколькими серверами Apache на стороне Nginx с помощью модуля ngx_http_upstream_module.
 
 Выполнение:
+
+root@love-linux:~# cd /etc/nginx/conf.d
+root@love-linux:/etc/nginx/conf.d# cat > upstreams.conf
+upstream dmosk_backend {
+        server localhost:8080 weight=100 max_conns=1000;
+        server localhost:8081 weight=10 max_fails=2 fail_timeout=90s;
+        server localhost:8082 max_fails=3 fail_timeout=2m;
+        server localhost:8083 backup;
+}
+
+fox@love-linux:/etc/nginx$ cd /etc/nginx/sites-enabled
+fox@love-linux:/etc/nginx/sites-enabled$ ll
+fox@love-linux:/etc/nginx/sites-enabled$ sudo nano default
+
+location / {
+                # First attempt to serve request as file, then
+                # as directory, then fall back to displaying a 404.
+                # try_files $uri $uri/ =404;
+                # proxy_pass http://localhost:8080;
+                proxy_pass http://dmosk_backend;
+                proxy_set_header Host $host;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Real-IP $remote_addr;
+        }
+
+fox@love-linux:~$ 
