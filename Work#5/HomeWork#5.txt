@@ -14,6 +14,45 @@
 
 Выполнение:
 
+fox@love-linux:~$ cd /etc/netplan
+fox@love-linux:/etc/netplan$ ll
+-rw-r--r--   1 root root   104 Aug  8 04:59 01-network-manager-all.yaml
+fox@love-linux:/etc/netplan$ sudo nano 01-network-manager-all.yaml
+
+# Let NetworkManager manage all devices on this system
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    enp0s3:
+      dhcp4: false
+      addresses: [10.0.2.15/24, 192.168.2.15/24]
+      routes:
+        - to: default
+          via: 10.0.2.2
+      mtu: 1480
+      nameservers:
+          addresses: [1.1.1.1, 8.8.8.8]
+
+fox@love-linux:/etc/netplan$ sudo netplan --debug generate
+** (process:12232): WARNING **: 17:21:40.576: Permissions for /etc/netplan/01-network-manager-all.yaml are too open. Netplan configuration should NOT be accessible by others.
+fox@love-linux:/etc/netplan$ sudo chmod 700 01-network-manager-all.yaml
+fox@love-linux:/etc/netplan$ sudo netplan --debug generate
+fox@love-linux:/etc/netplan$ sudo netplan try
+
+fox@love-linux:/etc/netplan$ ping ya.ru
+PING ya.ru (77.88.55.242) 56(84) bytes of data.
+64 bytes from ya.ru (77.88.55.242): icmp_seq=1 ttl=238 time=62.3 ms
+64 bytes from ya.ru (77.88.55.242): icmp_seq=2 ttl=238 time=57.1 ms
+64 bytes from ya.ru (77.88.55.242): icmp_seq=3 ttl=238 time=59.5 ms
+64 bytes from ya.ru (77.88.55.242): icmp_seq=4 ttl=238 time=62.2 ms
+^C
+--- ya.ru ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss, time 3030ms
+rtt min/avg/max/mdev = 57.082/60.263/62.318/2.159 ms
+
+fox@love-linux:~$
+
 ### 2. Настроить правила iptables для доступности сервисов на TCP-портах 22, 80 и 443.
 Также сервер должен иметь возможность устанавливать подключения к серверу обновлений.
 Остальные подключения запретить.
@@ -31,3 +70,5 @@
 ### 5*. Разрешить подключение по SSH только из сети 192.168.0.0/24.
 
 Выполнение:
+
+
