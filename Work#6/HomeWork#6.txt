@@ -144,7 +144,26 @@ mysql> SELECT * FROM Horse;
 +------------+
 3 rows in set (0.00 sec)
 
-
 ### 5*. Установить пакет phpmyadmin и запустить его веб-интерфейс для управления MySQL.
 
+Выполнение:
+
+fox@love-linux:/$ sudo apt install php-mbstring
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+php-mbstring is already the newest version (2:8.1+92ubuntu1).
+fox@love-linux:/$ sudo apt install phpmyadmin
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+phpmyadmin is already the newest version (4:5.1.1+dfsg1-5ubuntu1).
+fox@love-linux:/$ sudo ln -s /etc/phpmyadmin/apache.conf /etc/apache2/conf-available/phpmyadmin.conf
+fox@love-linux:/$ sudo a2enconf phpmyadmin.conf
+fox@love-linux:/$ sudo systemctl reload apache2
+
+127.0.0.1/phpmyadmin
+
 ### 6*. Настроить схему балансировки трафика между несколькими серверами Apache на стороне Nginx с помощью модуля ngx_http_upstream_module.
+
+Выполнение:
