@@ -63,8 +63,8 @@ fox@love-linux:~$ sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT
 fox@love-linux:~$ sudo iptables -A INPUT -p tcp --dport 80 -j ACCEPT
 fox@love-linux:~$ sudo iptables -A INPUT -p tcp --dport 443 -j ACCEPT
 fox@love-linux:~$ sudo iptables -A OUTPUT -p tcp --dport 1234 -j ACCEPT
-fox@love-linux:~$ sudo iptables -A INPUT -j DROP
-fox@love-linux:~$ sudo iptables -A OUTPUT -j DROP
+fox@love-linux:~$ sudo iptables -I INPUT -j DROP
+fox@love-linux:~$ sudo iptables -I OUTPUT -j DROP
 fox@love-linux:~$ sudo iptables -L
 fox@love-linux:~$ sudo iptables-save > iptables.conf
 fox@love-linux:~$
@@ -73,7 +73,7 @@ fox@love-linux:~$
 
 Выполнение:
 
-fox@love-linux:~$ sudo iptables -A INPUT -s 3.4.5.6 -j DROP
+fox@love-linux:~$ sudo iptables -I INPUT -s 3.4.5.6 -j DROP
 fox@love-linux:~$ sudo iptables -L
 fox@love-linux:~$ sudo iptables-save > iptables.conf
 fox@love-linux:~$
