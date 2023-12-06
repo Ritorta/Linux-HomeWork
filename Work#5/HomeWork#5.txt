@@ -68,7 +68,9 @@ sudo iptables -A INPUT -p tcp --dport 443 -j ACCEPT
 Выполнение:
 
 fox@love-linux:~$ sudo iptables -A INPUT -s 3.4.5.6 -j DROP
-fox@love-linux:~$ 
+fox@love-linux:~$ sudo iptables-save > /etc/iptables.rules
+fox@love-linux:~$ sudo service netfilter-persistent restart
+fox@love-linux:~$
 
 ### 4*. Запросы на порт 8090 перенаправлять на порт 80 (на этом же сервере).
 
