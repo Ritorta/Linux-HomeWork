@@ -68,7 +68,7 @@ fox@love-linux:~$ sudo iptables -A INPUT -m state --state ESTABLISHED, RELATED -
 fox@love-linux:~$ sudo iptables -I INPUT -j DROP
 fox@love-linux:~$ sudo iptables -I OUTPUT -j DROP
 fox@love-linux:~$ sudo iptables -L -nv
-fox@love-linux:~$ sudo iptables-save > iptables.conf
+fox@love-linux:~$ sudo iptables-save > iptables.rules
 fox@love-linux:~$
 
 ### 3. Запретить любой входящий трафик с IP 3.4.5.6.
@@ -77,7 +77,7 @@ fox@love-linux:~$
 
 fox@love-linux:~$ sudo iptables -A INPUT -s 3.4.5.6 -j DROP
 fox@love-linux:~$ sudo iptables -L -nv
-fox@love-linux:~$ sudo iptables-save > iptables.conf
+fox@love-linux:~$ sudo iptables-save > iptables.rules
 fox@love-linux:~$
 
 ### 4*. Запросы на порт 8090 перенаправлять на порт 80 (на этом же сервере).
@@ -86,7 +86,7 @@ fox@love-linux:~$
 
 fox@love-linux:~$ sudo iptables -t nat -A PREROUTING -p tcp --dport 8090 -j REDIRECT --to-port 80
 fox@love-linux:~$ sudo iptables -L -t nat
-fox@love-linux:~$ sudo iptables-save > iptables.conf
+fox@love-linux:~$ sudo iptables-save > iptables.rules
 fox@love-linux:~$
 
 ### 5*. Разрешить подключение по SSH только из сети 192.168.0.0/24.
@@ -95,5 +95,5 @@ fox@love-linux:~$
 
 fox@love-linux:~$ sudo iptables -A INPUT -p tcp --dport 22 -s 192.168.0.0/24 -j ACCEPT
 fox@love-linux:~$ sudo iptables -L -nv
-fox@love-linux:~$ sudo iptables-save > iptables.conf
+fox@love-linux:~$ sudo iptables-save > iptables.rules
 fox@love-linux:~$ 
