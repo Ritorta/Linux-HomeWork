@@ -75,7 +75,7 @@ fox@love-linux:~$
 
 Выполнение:
 
-fox@love-linux:~$ sudo iptables -I INPUT -s 3.4.5.6 -j DROP
+fox@love-linux:~$ sudo iptables -A INPUT -s 3.4.5.6 -j DROP
 fox@love-linux:~$ sudo iptables -L
 fox@love-linux:~$ sudo iptables-save > iptables.conf
 fox@love-linux:~$
