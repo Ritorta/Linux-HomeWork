@@ -68,6 +68,7 @@ sudo iptables -A INPUT -p tcp --dport 443 -j ACCEPT
 Выполнение:
 
 fox@love-linux:~$ sudo iptables -A INPUT -s 3.4.5.6 -j DROP
+fox@love-linux:~$ sudo iptables -L
 fox@love-linux:~$ sudo iptables-save > /etc/iptables.rules
 fox@love-linux:~$ sudo service netfilter-persistent restart
 fox@love-linux:~$
@@ -75,6 +76,12 @@ fox@love-linux:~$
 ### 4*. Запросы на порт 8090 перенаправлять на порт 80 (на этом же сервере).
 
 Выполнение:
+
+fox@love-linux:~$ sudo iptables -t nat -A PREROUTING -p tcp --dport 8090 -j REDIRECT --to-port 80
+fox@love-linux:~$ sudo iptables -L
+fox@love-linux:~$ sudo iptables-save > /etc/iptables.rules
+fox@love-linux:~$ sudo service netfilter-persistent restart
+fox@love-linux:~$
 
 ### 5*. Разрешить подключение по SSH только из сети 192.168.0.0/24.
 
