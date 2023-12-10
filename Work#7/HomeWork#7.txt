@@ -11,6 +11,25 @@
 ### 1. Установить в виртуальную машину или VDS Docker, настроить набор контейнеров через docker compose по инструкции.
 Часть с настройкой certbot и HTTPS опустить, если у вас нет настоящего домена и белого IP.
 
+fox@love-linux:~$ sudo apt install docker
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+docker is already the newest version (1.5-2).
+
+fox@love-linux:~$ sudo apt install docker-compose
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+docker-compose is already the newest version (1.29.2-1).
+
+fox@love-linux:~$ sudo apt install yamllint
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+yamllint is already the newest version (1.26.3-1).
+
+
 Выполнение:
 
 
