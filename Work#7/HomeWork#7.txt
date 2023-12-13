@@ -10,9 +10,10 @@
 
 ## Задание
 
-### 1. Установить в виртуальную машину или VDS Docker, настроить набор контейнеров через docker compose
- по инструкции (https://www.digitalocean.com/community/tutorials/how-to-install-wordpress-with-docker-compose-ru).
-Часть с настройкой certbot и HTTPS опустить, если у вас нет настоящего домена и белого IP.
+### 1. Установить в виртуальную машину или VDS Docker.
+1.1 Настроить набор контейнеров через docker compose по инструкции
+(https://www.digitalocean.com/community/tutorials/how-to-install-wordpress-with-docker-compose-ru).
+(Часть с настройкой certbot и HTTPS опустить, если у вас нет настоящего домена и белого IP.)
 
 fox@love-linux:~$ sudo apt install docker
 Reading package lists... Done
@@ -32,6 +33,61 @@ Building dependency tree... Done
 Reading state information... Done
 yamllint is already the newest version (1.26.3-1).
 
+fox@love-linux:~$ mkdir wordpress && cd wordpress
+fox@love-linux:~/wordpress$ mkdir nginx-conf && cd nginx-conf
+fox@love-linux:~/wordpress/nginx-conf$
+fox@love-linux:~/wordpress/nginx-conf$ nano nginx.conf 
+
+server {
+        listen 80;
+        listen [::]:80;
+
+        server_name ritorta.com www.ritorta.com;
+
+        index index.php index.html index.htm;
+
+        root /var/www/html;
+
+        location ~ /.well-known/acme-challenge {
+                allow all;
+                root /var/www/html;
+        }
+
+        location / {
+                try_files $uri $uri/ /index.php$is_args$args;
+        }
+
+        location ~ \.php$ {
+                try_files $uri =404;
+                fastcgi_split_path_info ^(.+\.php)(/.+)$;
+                fastcgi_pass wordpress:9000;
+                fastcgi_index index.php;
+                include fastcgi_params;
+                fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+                fastcgi_param PATH_INFO $fastcgi_path_info;
+        }
+
+        location ~ /\.ht {
+                deny all;
+        }
+
+        location = /favicon.ico {
+                log_not_found off; access_log off;
+        }
+        location = /robots.txt {
+                log_not_found off; access_log off; allow all;
+        }
+        location ~* \.(css|gif|ico|jpeg|jpg|js|png)$ {
+                expires max;
+                log_not_found off;
+        }
+}
+
+fox@love-linux:~/wordpress$ nano .env
+
+MYSQL_ROOT_PASSWORD=your_root_password
+MYSQL_USER=your_wordpress_database_user
+MYSQL_PASSWORD=your_wordpress_database_password
 
 Выполнение:
 
