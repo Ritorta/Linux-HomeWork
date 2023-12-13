@@ -89,6 +89,14 @@ MYSQL_ROOT_PASSWORD=your_root_password
 MYSQL_USER=your_wordpress_database_user
 MYSQL_PASSWORD=your_wordpress_database_password
 
+fox@love-linux:~/wordpress$ nano .dockerignore
+
+.env
+.git
+docker-compose.yml
+.dockerignore
+
+
 Выполнение:
 
 
