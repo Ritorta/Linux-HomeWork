@@ -15,11 +15,7 @@
 (https://www.digitalocean.com/community/tutorials/how-to-install-wordpress-with-docker-compose-ru).
 (Часть с настройкой certbot и HTTPS опустить, если у вас нет настоящего домена и белого IP.)
 
-fox@love-linux:~$ sudo apt install docker
-Reading package lists... Done
-Building dependency tree... Done
-Reading state information... Done
-docker is already the newest version (1.5-2).
+Выполнение:
 
 fox@love-linux:~$ sudo apt install docker-compose
 Reading package lists... Done
@@ -179,7 +175,7 @@ fox@love-linux:~$ sudo docker-compose ps
 
 
 
-Выполнение:
+
 
 
 
