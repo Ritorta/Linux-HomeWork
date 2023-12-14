@@ -83,7 +83,7 @@ server {
         }
 }
 
-fox@love-linux:~/wordpress$ nano .env
+fox@love-linux:~$ nano .env
 
 MYSQL_ROOT_PASSWORD=your_root_password
 MYSQL_USER=your_wordpress_database_user
@@ -172,6 +172,10 @@ Creating db ... done
 Creating wordpress ... done
 Starting webserver ... done
 Creating certbot   ... done
+
+fox@love-linux:~$ sudo docker-compose ps
+
+
 
 
 
