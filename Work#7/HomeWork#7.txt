@@ -109,6 +109,7 @@ services:
     command: '--default-authentication-plugin=mysql_native_password'
     networks:
       - app-network
+
   wordpress:
     depends_on:
       - db
@@ -125,6 +126,7 @@ services:
       - wordpress:/var/www/html
     networks:
       - app-network
+
   webserver:
     depends_on:
       - wordpress
@@ -136,23 +138,10 @@ services:
     volumes:
       - wordpress:/var/www/html
       - ./nginx-conf:/etc/nginx/conf.d
-      - certbot-etc:/etc/letsencrypt
     networks:
       - app-network
-  certbot:
-    depends_on:
-      - webserver
-    image: certbot/certbot
-    container_name: certbot
-    volumes:
-      - certbot-etc:/etc/letsencrypt
-      - wordpress:/var/www/html
-    command: certonly --webroot --webroot-path=/var/www/html
-              --email meddesu@yandex.ru
-              --agree-tos --no-eff-email
-              --staging -d ritorta.com -d www.ritorta.com
+
 volumes:
-  certbot-etc:
   wordpress:
   dbdata:
 
@@ -167,17 +156,10 @@ fox@love-linux:~$ sudo docker-compose up -d
 Creating db ... done
 Creating wordpress ... done
 Starting webserver ... done
-Creating certbot   ... done
 
 fox@love-linux:~$ sudo docker-compose ps
 
-
-
-
-
-
-
-
+НЕ РАБОТАЕТ!
 
 ### 2*. Запустить два контейнера, связанные одной сетью (используя документацию).
 Первый контейнер БД (например, образ mariadb:10.8), второй контейнер — phpmyadmin.
@@ -185,3 +167,62 @@ fox@love-linux:~$ sudo docker-compose ps
 
 Выполнение:
 
+fox@love-linux:~$ sudo apt -y install mariadb-server mariadb-client
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+mariadb-client is already the newest version (1:10.6.12-0ubuntu0.22.04.1).
+mariadb-server is already the newest version (1:10.6.12-0ubuntu0.22.04.1).
+
+fox@love-linux:~$ sudo mysql_secure_installation
+
+NOTE: RUNNING ALL PARTS OF THIS SCRIPT IS RECOMMENDED FOR ALL MariaDB
+      SERVERS IN PRODUCTION USE!  PLEASE READ EACH STEP CAREFULLY!
+
+In order to log into MariaDB to secure it, we'll need the current
+password for the root user. If you've just installed MariaDB, and
+haven't set the root password yet, you should just press enter here.
+
+...
+
+All done!  If you've completed all of the above steps, your MariaDB
+installation should now be secure.
+
+Thanks for using MariaDB!
+
+fox@love-linux:~$ nano docker-compose.yml
+
+version: '3'
+
+services:
+  db:
+    image: mariadb:10.8
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+    networks:
+      - mynetwork
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: password
+    depends_on:
+      - db
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+
+fox@love-linux:~$ yamllint docker-compose.yml
+fox@love-linux:~$ sudo systemctl stop nginx
+fox@love-linux:~$ sudo systemctl stop apache2
+fox@love-linux:~$ sudo docker-compose up -d
+
+http://localhost:8080/
