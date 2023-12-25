@@ -4,6 +4,7 @@ Google-doc HomeWork#1 Containerization - Урок 1. Механизмы прос
 Необходимо продемонстрировать изоляцию одного и того же приложения 
 (как решено на семинаре - командного интерпретатора) в различных пространствах имен.
 
+Выполнение:
 
 fox@love-linux:~/Containerization/HW1$ sudo unshare -pf -n --mount-proc bash
 
@@ -28,7 +29,7 @@ root@love-linux:/home/fox/Containerization/HW1# ps -afx
 включая его идентификатор (PID), родительский процесс (PPID), 
 пользователь, использование памяти, использование ЦП, статус и другие детали.
 
----- Creanshot 1 ----
+---- Creanshot 1 HW1----
 
 В терминале справа мы видим, несколько процессов bash и процесс bash в изолированом пространсве имён.
 В терминале слева мы видим изолированную оболочку с несколькими процессами.
@@ -37,7 +38,7 @@ root@love-linux:/home/fox/Containerization/HW1# ps -afx
 
 root@love-linux:/home/fox/Containerization/HW1# ping ya.ru
 
----- Creanshot 2 ----
+---- Creanshot 2 HW2----
 
 Становиться понятно, что в изолированной системе в терминале слева пинг даёт ошибку "Temporary failure in name resolution", 
 что говорит нам  о только локальной сети в данной системе.
@@ -49,7 +50,7 @@ root@love-linux:/home/fox/Containerization/HW1# sudo unshare -u bash
 root@love-linux:/home/fox/Containerization/HW1# hostname hate-linux
 root@love-linux:/home/fox/Containerization/HW1# hostname
 
----- Creanshot 3 ----
+---- Creanshot 3 HW3----
 
 Мы получим одинаковое имя хоста в обоих терминалах, команда $ unshare запускает программу (опционально) в новом namespace. 
 Флаг -u говорит ей запустить bash в новом UTS namespace. Новый процесс bash указывает на другой файл UTS, 
