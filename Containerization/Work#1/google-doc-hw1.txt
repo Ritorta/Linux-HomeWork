@@ -38,7 +38,7 @@ root@love-linux:/home/fox/Containerization/HW1# ps -afx
 
 root@love-linux:/home/fox/Containerization/HW1# ping ya.ru
 
----- Creanshot 2 HW2----
+---- Creanshot 2 HW1----
 
 Становиться понятно, что в изолированной системе в терминале слева пинг даёт ошибку "Temporary failure in name resolution", 
 что говорит нам  о только локальной сети в данной системе.
@@ -50,7 +50,7 @@ root@love-linux:/home/fox/Containerization/HW1# sudo unshare -u bash
 root@love-linux:/home/fox/Containerization/HW1# hostname hate-linux
 root@love-linux:/home/fox/Containerization/HW1# hostname
 
----- Creanshot 3 HW3----
+---- Creanshot 3 HW1----
 
 Мы получим одинаковое имя хоста в обоих терминалах, команда $ unshare запускает программу (опционально) в новом namespace. 
 Флаг -u говорит ей запустить bash в новом UTS namespace. Новый процесс bash указывает на другой файл UTS, 
