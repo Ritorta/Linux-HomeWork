@@ -1,0 +1,25 @@
+Google-doc HomeWork#3 Containerization - Урок 3. Введение в Docker.
+
+Задание: 
+
+1. Запустить контейнер с БД, отличной от mariaDB, используя инструкции на сайте: https://hub.docker.com/
+
+Выполнение:
+
+Заходим на сайт https://hub.docker.com/ и берём образ отличный от mariaDB, в нашем случае это будет MYSQL используя его внутрению инстркуцию.
+
+Описание параметров.
+
+some-mysql - имя, которое вы хотите присвоить своему контейнеру, 
+my-secret-pw - пароль, который необходимо установить для пользователя MySQL root, 
+tag - тег, указывающий нужную версию MySQL.
+
+fox@love-linux:~$ docker run -d --name mysql -e TZ=UTC -p 30306:3306 -e MYSQL_ROOT_PASSWORD=root ubuntu/mysql:8.0-22.04_beta
+
+2. Добавить в контейнер hostname такой же, как hostname системы через переменную
+3. Заполнить БД данными через консоль
+4. запустить phpmyadmin (в контейнере) и через веб проверить, что все введенные данные доступны
+
+
+docker run --name some-mysql -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mysql:tag
+
