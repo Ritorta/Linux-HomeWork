@@ -6,7 +6,8 @@ Google-doc HomeWork#3 Containerization - Урок 3. Введение в Docker.
 
 Выполнение:
 
-Заходим на сайт https://hub.docker.com/ и берём образ отличный от mariaDB, в нашем случае это будет MYSQL используя его внутрению инстркуцию.
+Заходим на сайт https://hub.docker.com/ и берём образ отличный от mariaDB, в нашем случае это будет MYSQL, 
+устанавливаем используя его внутрению инстркуцию.
 
 Описание параметров.
 
@@ -14,10 +15,109 @@ some-mysql - имя, которое вы хотите присвоить сво�
 my-secret-pw - пароль, который необходимо установить для пользователя MySQL root, 
 tag - тег, указывающий нужную версию MySQL.
 
-fox@love-linux:~$ docker run -d --name mysql -e TZ=UTC -p 30306:3306 -e MYSQL_ROOT_PASSWORD=root ubuntu/mysql:8.0-22.04_beta
+$ docker run --name some-mysql -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mysql:tag
+
+fox@love-linux:~$ docker run --name sqltest -e MYSQL_ROOT_PASSWORD=root -d mysql:8.0.33
+
+---- Creanshot 1 HW3----
+
+Затем заходим через bash в сам MySQL и видим что всё работает.
+
+---- Creanshot 2 HW3----
 
 2. Добавить в контейнер hostname такой же, как hostname системы через переменную
+
+Используя переменную -h устанавливаем имя хоста контейнера.
+
+fox@love-linux:~$ docker run -it -h fox-VirtualBox ubuntu:22.10
+root@fox-VirtualBox:/# 
+
+fox@love-linux:~$ sudo docker ps -a
+[sudo] password for fox:
+CONTAINER ID   IMAGE                               COMMAND                  CREATED          STATUS                          PORTS                 NAMES
+6ef4e35c5f80   ubuntu:22.10                        "/bin/bash"              3 minutes ago    Exited (127) 2 minutes ago                            exciting_maxwell
+943e980f25a7   mysql:8.0.33                        "docker-entrypoint.s…"   33 minutes ago   Up 33 minutes                   3306/tcp, 33060/tcp   sqltest
+b91c41e4655b   nginx:1.22.0-alpine                 "/docker-entrypoint.…"   8 days ago       Restarting (1) 59 seconds ago                         webserver
+13a24b179c9f   wordpress:6.0.1-php8.0-fpm-alpine   "docker-entrypoint.s…"   8 days ago       Exited (0) 8 days ago                                 wordpress
+2a19a938f980   mysql:8.0                           "docker-entrypoint.s…"   8 days ago       Exited (0) 8 days ago                                 db
+
 3. Заполнить БД данными через консоль
+
+Используем базовые команды MySQL предварительно зайдя в наш контейнер.
+
+fox@love-linux:~$ sudo docker exec -it 943e bash
+bash-4.4# mysql -u root -p
+Enter password: 
+
+Проверяем базы данных.
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+4 rows in set (0.00 sec)
+
+Создаём базу данных.
+
+mysql> CREATE DATABASE testFOX;
+Query OK, 1 row affected (0.01 sec)
+
+Проверяем, что создание прошлоу спешно и база появилась.
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
+| testFOX            |
++--------------------+
+5 rows in set (0.00 sec)
+
+Переключаемся на базу данных.
+
+mysql> USE testFOX;
+Database changed
+
+СОздаём таблицу.
+
+mysql> CREATE TABLE test(
+    -> id INT PRIMARY KEY AUTO_INCREMENT,
+    -> date DATE NOT NULL,
+    -> bucket INT NOT NULL
+    -> );
+Query OK, 0 rows affected (0.03 sec)
+
+Заполняем таблицу.
+
+mysql> INSERT INTO test(date, bucket) VALUE
+    -> ('2024-05-23', 650),
+    -> ('2023-07-03', 500),
+    -> ('2020-01-01', 10),
+    -> ('2013-12-13', 113);
+Query OK, 4 rows affected (0.02 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+Проверяем таблицу.
+
+mysql> SELECT * FROM test;
++----+------------+--------+
+| id | date       | bucket |
++----+------------+--------+
+|  1 | 2024-05-23 |    650 |
+|  2 | 2023-07-03 |    500 |
+|  3 | 2020-01-01 |     10 |
+|  4 | 2013-12-13 |    113 |
++----+------------+--------+
+4 rows in set (0.00 sec)
+
 4. запустить phpmyadmin (в контейнере) и через веб проверить, что все введенные данные доступны
 
 
