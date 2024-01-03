@@ -114,6 +114,32 @@ fox@love-linux:~$ lxc-start -n test1 --logfile log.log
 Второй лог указывает на ошибку "Container is already running", что означает, что контейнер уже был запущен.
 Предыдущая попытка запуска контейнера не завершилась успешно, и контейнер все еще работает.
 
+Для удаления контейра его сначала нужно остановить, а затем в вести команду на удаление.
+
+fox@love-linux:~$ sudo lxc-ls -f
+NAME  STATE   AUTOSTART GROUPS IPV4                  IPV6 UNPRIVILEGED 
+test1 RUNNING 0         -      10.0.0.10, 10.0.3.153 -    false        
+test2 RUNNING 0         -      10.0.0.20, 10.0.3.176 -    false        
+test3 RUNNING 0         -      -                     -    false        
+
+fox@love-linux:~$ sudo lxc-stop test3
+fox@love-linux:~$ sudo lxc-ls -f
+
+NAME  STATE   AUTOSTART GROUPS IPV4                  IPV6 UNPRIVILEGED 
+test1 RUNNING 0         -      10.0.0.10, 10.0.3.153 -    false        
+test2 RUNNING 0         -      10.0.0.20, 10.0.3.176 -    false        
+test3 STOPPED 0         -      -                     -    false        
+
+fox@love-linux:~$ sudo lxc-destroy -n test3
+
+fox@love-linux:~$ sudo lxc-ls -f
+NAME  STATE   AUTOSTART GROUPS IPV4                  IPV6 UNPRIVILEGED 
+test1 RUNNING 0         -      10.0.0.10, 10.0.3.153 -    false        
+test2 RUNNING 0         -      10.0.0.20, 10.0.3.176 -    false        
+fox@love-linux:~$ 
+
+---- Creanshot 7 HW2----
+
 6*. Настроить автоматическую маршрутизацию между контейнерами. Адреса можно взять: 10.0.12.0/24 и 10.0.13.0/24.
 
 Выполнение:
@@ -153,10 +179,19 @@ lxc.net.0.ipv4.address = 10.0.0.10/24
 
 lxc.net.0.ipv4.address = 10.0.0.20/24
 
----- Creanshot 7 HW2----
+---- Creanshot 8 HW2----
 
 Далее проверяем соединение, поскольку адрес прописан для контейнеров,
-а не для соединения с родительской станцией необходимо зайти в контейнер.
+а не для соединения с родительской станцией необходимо зайти в контейнер каждый контейнер, 
+чтобы проверить связь между ними.
 
 fox@love-linux:~$ sudo lxc-attach -n test1
-fox@love-linux:~$ sudo lxc-attach -n test2
+
+fox@love-linux:~$ sudo lxc-ls -f
+
+root@test1:/# ping 10.0.0.10
+root@test1:/# ping 10.0.3.153
+
+И аналогично для второго контейреа, ip адреса взять из списка для второго контейнера.
+
+---- Creanshot 9 HW2----
