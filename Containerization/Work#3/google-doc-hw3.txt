@@ -120,6 +120,8 @@ mysql> SELECT * FROM test;
 
 4. запустить phpmyadmin (в контейнере) и через веб проверить, что все введенные данные доступны
 
+Командой ниже мы связываем образ phpmyadmin с нашей базой SQL и запускаем локальный хост phpmyadmin.
 
-docker run --name some-mysql -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mysql:tag
+fox@love-linux:~$ docker run --name phpmyadmin-test -d --link sqltest:db -p 8082:80 phpmyadmin/phpmyadmin
 
+---- Creanshot 3 HW3----
