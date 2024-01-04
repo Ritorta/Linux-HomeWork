@@ -27,6 +27,8 @@ fox@love-linux:~$ docker run --name sqltest -e MYSQL_ROOT_PASSWORD=root -d mysql
 
 2. Добавить в контейнер hostname такой же, как hostname системы через переменную
 
+Выполнение:
+
 Используя переменную -h устанавливаем имя хоста контейнера.
 
 fox@love-linux:~$ docker run -it -h fox-VirtualBox ubuntu:22.10
@@ -42,6 +44,8 @@ b91c41e4655b   nginx:1.22.0-alpine                 "/docker-entrypoint.…"   8 
 2a19a938f980   mysql:8.0                           "docker-entrypoint.s…"   8 days ago       Exited (0) 8 days ago                                 db
 
 3. Заполнить БД данными через консоль
+
+Выполнение:
 
 Используем базовые команды MySQL предварительно зайдя в наш контейнер.
 
@@ -119,6 +123,8 @@ mysql> SELECT * FROM test;
 4 rows in set (0.00 sec)
 
 4. запустить phpmyadmin (в контейнере) и через веб проверить, что все введенные данные доступны
+
+Выполнение:
 
 Командой ниже мы связываем образ phpmyadmin с нашей базой SQL и запускаем локальный хост phpmyadmin.
 

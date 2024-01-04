@@ -1,0 +1,75 @@
+Google-doc HomeWork#3 Containerization - Урок 4. Dockerfile и слои
+
+Задание: 
+
+1. Необходимо создать Dockerfile, основанный на любом образе (вы в праве выбрать самостоятельно).
+
+Выполнение:
+
+Создаём Dockerfile на основе Python:
+
+FROM python:3
+
+ADD py4.py /
+
+CMD [ "python", "./py4.py" ]
+
+2. В него необходимо поместить приложение, написанное на любом известном вам языке программирования (Python, Java, C, С#, C++).
+
+Выполнение:
+
+Создаём код на поиск счастливых или не счастливых билетов:
+
+n = "842619"
+
+firstn = int(0)
+
+secondn = int(0)
+
+count = len(n)
+
+if count == 6:
+
+    n = int(n)
+
+    for i in range(6):
+
+        if i < 3:
+
+            firstn = firstn + n // 10 ** i % 10
+
+        else:
+
+            secondn = secondn + n // 10 ** i % 10
+
+    if firstn == secondn:
+
+        print('Yes, thes lucky ticket')         
+
+    else:
+
+        print('Oh no, thes ticket losers')
+
+else:
+
+    print('Error, enter six-digit number!')
+
+lst = list()
+
+lst = ['Привет!', 'Код успешно выполнился!', 'А значит все удачно работает', 'Прямо из контейнера']
+
+for x in lst:
+
+    print(x)
+
+3. При запуске контейнера должно запускаться самостоятельно написанное приложение.
+
+Выполнение:
+
+Создаём контейнер и запускаем его:
+
+fox@love-linux:~$ docker build -t py15 .
+
+fox@love-linux:~$ docker run py15
+
+---- Creanshot 1 HW4----
