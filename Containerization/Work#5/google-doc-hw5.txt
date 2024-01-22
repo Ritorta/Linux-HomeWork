@@ -1,0 +1,257 @@
+Google-doc HomeWork#3 Containerization - Урок 5. Docker Compose и Docker Swarm
+
+Задания: 
+
+1. Создать сервис, состоящий из 2 различных контейнеров: 1 - веб, 2 - БД.
+
+Выполнение:
+
+Для этого создаём документ compose.yaml
+
+version: '3.9'
+
+services:
+     db:
+       image: mariadb:10.10.2
+       restart: always
+       environment:
+          MYSQL_ROOT_PASSWORD: 12345
+
+     adminer:
+       image: adminer:4.8.1
+       restart: always
+       ports:
+          6080:8080
+
+networks:
+  app-dk-1:
+
+
+2. Далее необходимо создать 3 сервиса в каждом окружении (dev, prod, lab).
+
+Выполнение:
+
+Для этого создаём документы:
+--- compose.dev.yaml ---
+
+version: '3.9'
+
+services:
+  db:
+    image: mysql:8.3.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 12345
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports:
+       80:81
+    environment:
+      MYSQL_ROOT_PASSWORD: 12345
+
+--- compose.lab.yaml ---
+
+version: '3.9'
+
+services:
+  db:
+    image: mysql:8.3.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 12345
+
+  web:
+    image: nginx:latest
+    restart: always
+    ports:
+       80:82
+    volumes:
+    	./src:/usr/share/nginx/html
+    links: 
+    	php
+
+--- compose.prod.yaml ---
+
+version: '3.9'
+services:
+     db:
+       image: mariadb:10.10.2
+       restart: always
+       environment:
+          MYSQL_ROOT_PASSWORD: 12345
+
+     adminer:
+       image: adminer:4.8.1
+       restart: always
+       ports:
+          6080:8080
+
+3. По итогу на каждой ноде должно быть по 2 работающих контейнера.
+
+Выполнение:
+
+Добавляем в .yaml:
+
+ deploy:
+      replicas: 2
+
+Для запуска под два экземпляра на ноде.
+
+
+4. Выводы зафиксировать.
+
+Выполнение:
+
+Для того чтобы пользоваться swarm, надо запомнить несколько типов сущностей:
+
+Node - это наши виртуальные машины, на которых установлен docker. 
+Есть manager и workers ноды. Manager нода управляет workers нодами. 
+Она отвечает за создание/обновление/удаление сервисов на workers, 
+а также за их масштабирование и поддержку в требуемом состоянии. 
+Workers ноды используются только для выполнения поставленных задач и не могут управлять кластером.
+
+Stack - это набор сервисов, которые логически связаны между собой. 
+По сути это набор сервисов, которые мы описываем в обычном compose файле. 
+Части stack (services) могут располагаться как на одной ноде, так и на разных.
+
+Service - это как раз то, из чего состоит stack. Service является описанием того, 
+какие контейнеры будут создаваться. Если вы пользовались docker-compose.yaml, 
+то уже знакомы с этой сущностью. Кроме стандартных полей docker в режиме swarm поддерживает ряд дополнительных, 
+большинство из которых находятся внутри секции deploy.
+
+Task - это непосредственно созданный контейнер, который docker создал на основе той информации, 
+которую мы указали при описании service. 
+Swarm будет следить за состоянием контейнера и при необходимости его перезапускать или перемещать на другую ноду.
+
+Для того чтобы сервисы распределять на определенные ноды необходимо применять labels.
+
+6* Нужно создать 2 ДК-файла, в которых будут описываться сервисы.
+
+Выполнение:
+
+Для этого создаём два документа:
+
+--- compose.yaml --- 
+
+version: '3.9'
+
+services:
+     db:
+       image: mariadb:10.10.2
+       restart: always
+       environment:
+          MYSQL_ROOT_PASSWORD: 12345
+
+     adminer:
+       image: adminer:4.8.1
+       restart: always
+       ports:
+          6080:8080
+
+--- compose.yml ---
+
+version: '3.9'
+services:
+
+  db:
+    image: mysql:8.3.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 12345
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports:
+       80:80
+    environment:
+      MYSQL_ROOT_PASSWORD: 12345
+
+7* Повторить задание 1(6* - в моём формате документа) для двух окружений: lab, dev
+
+Выполнение:
+
+Создадим две папки и повторим для ниж задание 1(6* - в моём формате документа), поскольку это повторение действий выше только в разных папках подробного описания не будет.
+
+8* Обязательно проверить и зафиксировать результаты, чтобы можно было выслать преподавателю для проверки
+
+Выполнение:
+
+Описано в пункте 6* и 7*.
+
+9. Персональное задание от преподавателя повторить действия на семенаре как по методичке:
+
+9.1 Создать ДК файл декларативным и императивным подходом.
+
+Выполнение:
+
+Создаём docker-compose.yaml файл с нашим сервисом(декларативный подход):
+
+version: '3.9'
+
+services:
+  db:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 12345
+    networks:
+      - dbui_network
+    hostname: sql
+
+  ui:
+    image: phpmyadmin
+    ports:
+      - 80:80
+    networks:
+      - dbui_network
+    hostname: ui
+
+networks:
+  dbui_network:
+
+Или спомощью bash скрипта файла(императивный подход):
+
+#!/bin/bash
+(docker rm -vf db ui - команда для автоматического удаления контейнеров при пересоздании)
+docker run -d -e MYSQL_ROOT_PASSWORD=12345 --hostname db --name db mysql
+docker run -d -p 80:80 --link db:db --hostname ui --name ui phpmyadmin
+
+---- Creanshot 1 HW5----
+
+9.2 Развернуть Docker-Swarm.
+
+Клонируем Lunux до трёх штук, настраиваем сетевой мост, запускаем и подключаемся к всем трёх системам через ssh,
+переименовываем хосты двух машин для орентирования(нужно перезайти по ssh чтобы изменения хоста вступили в силу).
+
+> ssh fox@192.168.0.150
+fox@love-linux:~$ sudo hostname node-3
+[sudo] password for fox:
+fox@love-linux:~$ exit
+> ssh fox@192.168.0.150
+fox@node-3:~$
+
+---- Creanshot 2 HW5----
+
+Теперь инициализируем кластер на первой машине создаём мастер машину а затем добавляем две другие машини как воркеров, 
+вставляя в консоль каждой машины команду для поключения к мастеру.
+
+fox@love-linux:~$ sudo docker swarm init
+fox@node-2:~$ docker swarm join --token SWMTKN-1-562u6nj0h8k800sdvwpqc37zavmd2ssyxcsq651mtl4qv6qjmj-9a9unuyx4h39k3t2vogcz6bna 192.168.0.193:2377
+This node joined a swarm as a worker.
+fox@node-3:~$ docker swarm join --token SWMTKN-1-562u6nj0h8k800sdvwpqc37zavmd2ssyxcsq651mtl4qv6qjmj-9a9unuyx4h39k3t2vogcz6bna 192.168.0.193:2377
+This node joined a swarm as a worker.
+
+Теперь проверим командой наличие нодов в листе на оснвоной машине.
+
+fox@love-linux:~$ sudo docker node ls
+ID                            HOSTNAME     STATUS    AVAILABILITY   MANAGER STATUS   ENGINE VERSION
+k7dnyxp21cw6n2qlsdkxva8cj     love-linux   Ready     Active                          24.0.7
+tivwu86e4e2c0gtnamj9eszd9 *   love-linux   Ready     Active         Leader           24.0.7
+v7heyztfb9p862lpqopvhn43g     love-linux   Ready     Active                          24.0.7
+
+---- Creanshot 3 HW5----
+
+
+
