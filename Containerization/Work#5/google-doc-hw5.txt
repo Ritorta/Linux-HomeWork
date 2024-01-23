@@ -317,3 +317,38 @@ fox@love-linux:~/HW5/T4$ docker stack up -c compose.yaml dbui1
 ---- Creanshot 7 HW5----
 
 Опять же ввиду того, что третья нода сидит на пседво NAT сети и на ней живёт db к ней полноценно не обратиться она полу изолирована.
+
+9.6 Создание нодов через Kubernetes
+
+В гайде по установке данной программы был обнаружен способ по исправлению проблем при работе с NAT и сетью но уже слишком поздно,
+переделывать по 20 раз я уже не будут там и так всё отлично работает пусть и на две с половиной ноды.
+Зато в с Kubernetes не должно быть проблем надеюсь.
+
+И так для начала уставноим его есть два способа использую офицальный гайд с офицального сайта или ниже приведённый скрипт.
+
+#!/usr/bin/env bash
+
+sudo apt-get update
+
+sudo apt-get install -y \
+    apt-transport-https \
+    curl
+
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+
+cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
+deb https://apt.kubernetes.io/ kubernetes-xenial main
+EOF
+
+fox@love-linux:~$ sudo chmod +x kiber.sh 
+fox@love-linux:~$ ./kiber.sh
+
+Изменяем cgroup driver для Docker и Kubernetes на systemd, 
+в различных источниках рекомендуется перейти именно на драйвер systemd, как на более современный. 
+
+Для изменения драйвера в Kubernetes отредактируем файл /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+И добавим в конец строки ExecStart=/usr/bin/kubelet... ещё один параметр --cgroup-driver=systemd
+
+fox@love-linux:~$ cd /etc/systemd/system/kubelet.service.d/
+fox@love-linux:/etc/systemd/system/kubelet.service.d$ sudo nano 10-kubeadm.conf 
+
