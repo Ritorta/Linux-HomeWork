@@ -318,7 +318,23 @@ fox@love-linux:~/HW5/T4$ docker stack up -c compose.yaml dbui1
 
 Опять же ввиду того, что третья нода сидит на пседво NAT сети и на ней живёт db к ней полноценно не обратиться она полу изолирована.
 
-9.6 Установка и настройка Kubernetes
+9.6 Доп. найстройка Docker для работы с Kubernetes
+
+В различных источниках рекомендуется перейти именно на драйвер systemd, как на более современный для работы с Kubernetes
+
+Для этого перейдём в папку /etc/docker и создадим в ней файл daemon.json и пропишем туда:
+
+{
+  "exec-opts": ["native.cgroupdriver=systemd"]
+}
+
+fox@love-linux:~$ sudo nano /etc/docker/daemon.json
+
+Проверяем, что изменения были успешно внесены и файл создан.
+
+fox@node-3:~$ sudo cat /etc/docker/daemon.json
+
+9.6.1 Установка и настройка Kubernetes
 
 В гайде по установке данной программы был обнаружен способ по исправлению проблем при работе с NAT и сетью но уже слишком поздно,
 переделывать по 20 раз я уже не будут там и так всё отлично работает пусть и на две с половиной ноды.
@@ -360,3 +376,14 @@ fox@love-linux:/etc/systemd/system/kubelet.service.d$ sudo nano 10-kubeadm.conf
 После перезагружаем виртуальные машины (нужно проделать для каждой).
 
 9.7 Создание нодов через Kubernetes
+
+sudo kubeadm init \
+	--apiserver-advertise-address=192.168.58.104 \
+  --pod-network-cidr=10.10.0.0/16 > ~/shared/kubeadm-join.sh
+
+  получаем ошибку:
+  
+  [ERROR CRI]: container runtime is not running: output: time="2024-01-23T12:34:22+03:00" level=fatal msg="validate service connection: CRI v1 runtime API is not implemented for endpoint \"unix:///var/run/containerd/containerd.sock\": rpc error: code = Unimplemented desc = unknown service runtime.v1.RuntimeService"
+, error: exit status 1
+  
+   и идём опять курить кучу гайдов очень "люблю" линукс )
