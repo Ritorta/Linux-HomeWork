@@ -233,7 +233,7 @@ docker run -d -p 80:80 --link db:db --hostname ui --name ui phpmyadmin
 переименовываем хосты двух машин для орентирования(нужно перезайти по ssh чтобы изменения хоста вступили в силу).
 
 > ssh fox@192.168.0.150
-fox@love-linux:~$ sudo hostname node-3
+fox@love-linux:~$ sudo hostnamectl set-hostname node-3
 [sudo] password for fox:
 fox@love-linux:~$ exit
 > ssh fox@192.168.0.150
@@ -350,5 +350,11 @@ fox@love-linux:~$ ./kiber.sh
 И добавим в конец строки ExecStart=/usr/bin/kubelet... ещё один параметр --cgroup-driver=systemd
 
 fox@love-linux:~$ cd /etc/systemd/system/kubelet.service.d/
-fox@love-linux:/etc/systemd/system/kubelet.service.d$ sudo nano 10-kubeadm.conf 
+fox@love-linux:/etc/systemd/system/kubelet.service.d$ sudo nano 10-kubeadm.conf
 
+Когда Kubernetes будет запускаться на узле, он в качестве IP узла будет использовать IP адрес сетевого адаптера,
+по умолчанию, а это NAT с динамическими адресами, который нам не подходит. Чтобы использовать статический IP адрес, 
+который мы указали, отредактируем файл /etc/systemd/system/kubelet.service.d/10-kubeadm.conf,
+добавим в конец строки ExecStart=/usr/bin/kubelet... ещё один параметр --node-ip=192.168.56.104 (текущий ip адрес с сетевого адаптера)
+
+После перезагружаем виртуальные машины (нужно проделать для каждой).
