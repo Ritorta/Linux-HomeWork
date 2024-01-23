@@ -377,13 +377,17 @@ fox@love-linux:/etc/systemd/system/kubelet.service.d$ sudo nano 10-kubeadm.conf
 
 9.7 Создание нодов через Kubernetes
 
-sudo kubeadm init \
-	--apiserver-advertise-address=192.168.58.104 \
-  --pod-network-cidr=10.10.0.0/16 > ~/shared/kubeadm-join.sh
+Пытаемся создать и.........
 
-  получаем ошибку:
-  
-  [ERROR CRI]: container runtime is not running: output: time="2024-01-23T12:34:22+03:00" level=fatal msg="validate service connection: CRI v1 runtime API is not implemented for endpoint \"unix:///var/run/containerd/containerd.sock\": rpc error: code = Unimplemented desc = unknown service runtime.v1.RuntimeService"
+fox@love-linux:~$ sudo kubeadm init \
+> --apiserver-advertise-address=192.168.56.104 \
+> --pod-network-cidr=10.10.0.0/16 > ~/shared/kubeadm-join.sh
+I0123 12:34:21.771969    5777 version.go:256] remote version is much newer: v1.29.1; falling back to: stable-1.28
+        [WARNING Swap]: swap is enabled; production deployments should disable swap unless testing the NodeSwap feature gate of the kubelet
+error execution phase preflight: [preflight] Some fatal errors occurred:
+        [ERROR CRI]: container runtime is not running: output: time="2024-01-23T12:34:22+03:00" level=fatal msg="validate service connection: CRI v1 runtime API is not implemented for endpoint \"unix:///var/run/containerd/containerd.sock\": rpc error: code = Unimplemented desc = unknown service runtime.v1.RuntimeService"
 , error: exit status 1
+[preflight] If you know what you are doing, you can make a check non-fatal with `--ignore-preflight-errors=...`
+To see the stack trace of this error execute with --v=5 or higher
   
-   и идём опять курить кучу гайдов очень "люблю" линукс )
+..... и идём опять курить кучу гайдов очень "люблю" линукс.... )
