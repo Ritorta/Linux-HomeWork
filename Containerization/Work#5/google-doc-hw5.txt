@@ -1,4 +1,4 @@
-Google-doc HomeWork#3 Containerization - Урок 5. Docker Compose и Docker Swarm
+Google-doc HomeWork#5 Containerization - Урок 5. Docker Compose и Docker Swarm
 
 Конкретно в моём случае были проблемы с VRBox который был программой для эмуляции систем Linux, не работает сетевой мост,
 который важен для создания сети и раздачи интернета.
