@@ -373,7 +373,15 @@ fox@love-linux:/etc/systemd/system/kubelet.service.d$ sudo nano 10-kubeadm.conf
 который мы указали, отредактируем файл /etc/systemd/system/kubelet.service.d/10-kubeadm.conf,
 добавим в конец строки ExecStart=/usr/bin/kubelet... ещё один параметр --node-ip=192.168.56.104 (текущий ip адрес с сетевого адаптера)
 
-После перезагружаем виртуальные машины (нужно проделать для каждой).
+Затем отключаем swap, из-за которого Kubernetes не включиться, предварительно проверямем включен ли он:
+
+fox@love-linux:~$ cat /proc/swaps
+
+Если файлы есть, то swap включен, поэтому переходим в папку /etc, ищем там файл fstab и открываем его на редактирование.
+
+Закомментируем (или просто удалим) последнюю строку (в которой упоминается файл /swap.img), сохраним файл и перезагрузим виртуальную машину
+
+Swap надо выключить для каждой виртуальной машины.
 
 9.7 Создание нодов через Kubernetes
 
@@ -382,10 +390,10 @@ fox@love-linux:/etc/systemd/system/kubelet.service.d$ sudo nano 10-kubeadm.conf
 fox@love-linux:~$ sudo kubeadm init \
 > --apiserver-advertise-address=192.168.56.104 \
 > --pod-network-cidr=10.10.0.0/16 > ~/shared/kubeadm-join.sh
-I0123 12:34:21.771969    5777 version.go:256] remote version is much newer: v1.29.1; falling back to: stable-1.28
-        [WARNING Swap]: swap is enabled; production deployments should disable swap unless testing the NodeSwap feature gate of the kubelet
+
+I0123 14:46:14.976192    4576 version.go:256] remote version is much newer: v1.29.1; falling back to: stable-1.28
 error execution phase preflight: [preflight] Some fatal errors occurred:
-        [ERROR CRI]: container runtime is not running: output: time="2024-01-23T12:34:22+03:00" level=fatal msg="validate service connection: CRI v1 runtime API is not implemented for endpoint \"unix:///var/run/containerd/containerd.sock\": rpc error: code = Unimplemented desc = unknown service runtime.v1.RuntimeService"
+	[ERROR CRI]: container runtime is not running: output: time="2024-01-23T14:46:16+03:00" level=fatal msg="validate service connection: CRI v1 runtime API is not implemented for endpoint \"unix:///var/run/containerd/containerd.sock\": rpc error: code = Unimplemented desc = unknown service runtime.v1.RuntimeService"
 , error: exit status 1
 [preflight] If you know what you are doing, you can make a check non-fatal with `--ignore-preflight-errors=...`
 To see the stack trace of this error execute with --v=5 or higher
