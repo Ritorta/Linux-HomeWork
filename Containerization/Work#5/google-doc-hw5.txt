@@ -205,20 +205,18 @@ services:
       MYSQL_ROOT_PASSWORD: 12345
     networks:
       - dbui_network
-    hostname: sql
+    hostname: db
 
   ui:
     image: phpmyadmin
     ports:
-      - 80:80
+      - 8081:80
     networks:
       - dbui_network
     hostname: ui
 
 networks:
   dbui_network:
-
-Docker-compose не подходит для работы с doker swarm о чем он сам предупредит и предложит работать с docker swarm через обычный docker.
 
 Или спомощью bash скрипта файла(императивный подход):
 
@@ -308,5 +306,14 @@ fox@love-linux:~$ docker exec 2f bash -c "echo node-0-1 > /usr/share/nginx/html/
 
 fox@love-linux:~$ curl 192.168.56.102
 
-
 ---- Creanshot 6 HW5----
+
+9.5 Теперь попробуем запустить через docker-compose для этого перейдём в каталог с нашим compose.yaml файлом и выполним команду:
+
+fox@love-linux:~/HW5/T4$ docker stack up -c compose.yaml dbui1
+
+На двух из трёх нодах запустились контейнеры, что видно на скриншоте:
+
+---- Creanshot 7 HW5----
+
+Опять же ввиду того, что третья нода сидит на пседво NAT сети и на ней живёт db к ней полноценно не обратиться она полу изолирована.
