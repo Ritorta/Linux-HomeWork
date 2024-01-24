@@ -334,30 +334,121 @@ fox@love-linux:~$ sudo nano /etc/docker/daemon.json
 
 fox@node-3:~$ sudo cat /etc/docker/daemon.json
 
-9.6.1 Установка и настройка Kubernetes
+9.6.1 Предварительная настройка для Kubernetes
 
-В гайде по установке данной программы был обнаружен способ по исправлению проблем при работе с NAT и сетью но уже слишком поздно,
-переделывать по 20 раз я уже не будут там и так всё отлично работает пусть и на две с половиной ноды.
-Зато в с Kubernetes не должно быть проблем надеюсь.
+В общем если у вас нет белого(статического) IP и физических нод, готовтесь к наказанию и испытаю своих нервов,
+ибо это программа Kubernetes засыпет вас ошибками и ебаться вы будете очень долго.
+Но если вам нравится жесткий секс, то прошу к настройке Kubernetes, ниже собрано два гайда в один по настройке.
+Посколько по отдельности она просто не рабоатет.
+Предупреждаю у вас будет много ошибок от этой программы, будьте готовы к этому, 
+если софт не работает с коробки он кривой и это факт.
+Коли вы вступили всё-таки волей не волей решительно приступили,
+то выпейте чего покрепче и приступате к настройке,
+УДАЧИ!
 
-И так для начала уставноим его есть два способа использую офицальный гайд с офицального сайта или ниже приведённый скрипт.
+Сначала мы можем задать имена хостам, по желанию вот этой командой:
 
-#!/usr/bin/env bash
+fox@love-linux:~$ sudo hostnamectl set-hostname master-node
+
+Потом надо поменять отредактировать host файл:
+
+fox@love-linux:~$ sudo nano /etc/hosts
+
+В приведённой ниже строчки написано имя вашего хоста а напротив него должен быть прописать IP вашей сети, 
+это будет IP нашего конкнетного узла на каждой машине нужно назначить свой.
+Обращаю конкретное внимание, что с динамическим IP Kubernetes работать не будет, IP должен быть статическим!
+
+192.168.56.104	love-linux 
+
+(IP можно посмотреть командой "ip addr" или "ip a")
+
+Далее обновляем дополнительные пакеты и утилиты, я этого не делал навсякий оставлю,
+если это потребуется в обязательном порядке то подредактирую текст.
+
+sudo apt-get update && apt-get upgrade -y
+
+sudo apt-get install curl apt-transport-https git iptables-persistent -y
+
+Затем отключаем файл подкачки swap, из-за которого Kubernetes не включиться, предварительно проверямем включен ли он:
+
+fox@love-linux:~$ sudo swapoff -a
+
+Чтобы он не включился после перезагрузки, необходимо изменить файл fstab:
+
+fox@love-linux:~$ sudo nano /etc/fstab
+
+Закомментируем (или просто удалим) последнюю строку (в которой упоминается файл /swap.img), сохраним файл и перезагрузим виртуальную машину
+Swap надо выключить для каждой виртуальной машины.
+
+/swap.img      none    swap    sw      0       0
+
+Проверяем:
+
+fox@love-linux:~$ cat /proc/swaps
+
+Если файлы есть, то swap включен, поэтому переходим в папку /etc, ищем там файл fstab и открываем его на редактирование и проверяем.
+
+Потом загрузим дополнительные модули ядра:
+
+sudo nano /etc/modules-load.d/k8s.conf
+
+В k8s.conf добавим 2 строки:
+
+br_netfilter
+overlay
+
+Теперь добавим модули в ядро:
+
+sudo modprobe br_netfilter
+sudo modprobe overlay
+
+Проверим успешность действий:
+
+sudo lsmod | egrep "br_netfilter|overlay"
+
+Должен быть примерно такой вывод:
+
+overlay               147456  0
+br_netfilter           28672  0
+bridge                299008  1 br_netfilter
+
+Создадим конфигурационный файл для обработки трафика через bridge в netfilter:
+
+sudo nano /etc/sysctl.d/k8s.conf
+
+В файл вносим 2 строки:
+
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+
+Применим настройки:
+
+sudo sysctl --system
+
+9.6.2 Установка Kubernetes 
+
+Добавим GPG-ключ:
+
+sudo curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+
+Теперь создадим файл с настройкой репозитория:
+
+sudo nano /etc/apt/sources.list.d/kubernetes.list
+
+И добавим в него такую запись:
+
+deb https://apt.kubernetes.io/ kubernetes-xenial main
+
+Обновим пакеты и устанавливаем:
 
 sudo apt-get update
+sudo apt-get install kubelet kubeadm kubectl
 
-sudo apt-get install -y \
-    apt-transport-https \
-    curl
+Првоерка версии:
 
-curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+sudo kubectl version --client 
 
-cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
-deb https://apt.kubernetes.io/ kubernetes-xenial main
-EOF
-
-fox@love-linux:~$ sudo chmod +x kiber.sh 
-fox@love-linux:~$ ./kiber.sh
+9.6.3 Доп. настройка для после установки Kubernetes
 
 Изменяем cgroup driver для Docker и Kubernetes на systemd, 
 в различных источниках рекомендуется перейти именно на драйвер systemd, как на более современный. 
@@ -368,34 +459,57 @@ fox@love-linux:~$ ./kiber.sh
 fox@love-linux:~$ cd /etc/systemd/system/kubelet.service.d/
 fox@love-linux:/etc/systemd/system/kubelet.service.d$ sudo nano 10-kubeadm.conf
 
-Когда Kubernetes будет запускаться на узле, он в качестве IP узла будет использовать IP адрес сетевого адаптера,
-по умолчанию, а это NAT с динамическими адресами, который нам не подходит. Чтобы использовать статический IP адрес, 
-который мы указали, отредактируем файл /etc/systemd/system/kubelet.service.d/10-kubeadm.conf,
-добавим в конец строки ExecStart=/usr/bin/kubelet... ещё один параметр --node-ip=192.168.56.104 (текущий ip адрес с сетевого адаптера)
+Изменяем cgroup driver для Docker и Kubernetes на systemd, 
+в различных источниках рекомендуется перейти именно на драйвер systemd, как на более современный. 
 
-Затем отключаем swap, из-за которого Kubernetes не включиться, предварительно проверямем включен ли он:
+Для изменения драйвера в Kubernetes отредактируем файл /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+И добавим в конец строки ExecStart=/usr/bin/kubelet... ещё один параметр --cgroup-driver=systemd
 
-fox@love-linux:~$ cat /proc/swaps
+fox@love-linux:~$ cd /etc/systemd/system/kubelet.service.d/
+fox@love-linux:/etc/systemd/system/kubelet.service.d$ sudo nano 10-kubeadm.conf
 
-Если файлы есть, то swap включен, поэтому переходим в папку /etc, ищем там файл fstab и открываем его на редактирование.
+9.7 Настройка и создание кластера  Kubernetes
 
-Закомментируем (или просто удалим) последнюю строку (в которой упоминается файл /swap.img), сохраним файл и перезагрузим виртуальную машину
+Выполняем команду для начальной настройки и подготовки узла:
 
-Swap надо выключить для каждой виртуальной машины.
+sudo kubeadm init --pod-network-cidr=10.244.0.0/16
 
-9.7 Создание нодов через Kubernetes
+Ключ --pod-network-cidr задает адрес внутренней подсети. 10.244.0.0/16 — значение по умолчанию.
 
-Пытаемся создать и.........
+Процесс займет несколько минут(У меня занял 20 минут). По его завершению в консоли появится ключ для подключения workers:
 
-fox@love-linux:~$ sudo kubeadm init \
-> --apiserver-advertise-address=192.168.56.104 \
-> --pod-network-cidr=10.10.0.0/16 > ~/shared/kubeadm-join.sh
+Then you can join any number of worker nodes by running the following on each as root:
 
-I0123 14:46:14.976192    4576 version.go:256] remote version is much newer: v1.29.1; falling back to: stable-1.28
-error execution phase preflight: [preflight] Some fatal errors occurred:
-	[ERROR CRI]: container runtime is not running: output: time="2024-01-23T14:46:16+03:00" level=fatal msg="validate service connection: CRI v1 runtime API is not implemented for endpoint \"unix:///var/run/containerd/containerd.sock\": rpc error: code = Unimplemented desc = unknown service runtime.v1.RuntimeService"
-, error: exit status 1
-[preflight] If you know what you are doing, you can make a check non-fatal with `--ignore-preflight-errors=...`
-To see the stack trace of this error execute with --v=5 or higher
-  
-..... и идём опять курить кучу гайдов очень "люблю" линукс.... )
+kubeadm join 10.0.2.15:6443 --token 8w5ufa.bn2igbv71n9hlcjn \
+
+	--discovery-token-ca-cert-hash sha256:72b5256d24b0a3dc9c2f1b4cc817e3882278448e3dab950d00498ccb578d5c09 
+
+Создадим переменную окружения KUBECONFIG:
+
+export KUBECONFIG=/etc/kubernetes/admin.conf
+
+Также выполним установку CNI (сетевой интерфейс контейнеров):
+
+kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+
+9.8 
+
+На рабочей ноде выполняем команду kubeadm join, полученную при настройке мастер-ноды. После этого введем на мастер-ноде приверив что всё подключилось:
+
+sudo kubectl get nodes
+
+Программа засыпала меня очередной порцией ошибок:
+
+E0124 09:49:40.916775   25961 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp 127.0.0.1:8080: connect: connection refused
+
+E0124 09:49:40.917440   25961 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp 127.0.0.1:8080: connect: connection refused
+
+E0124 09:49:40.919730   25961 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp 127.0.0.1:8080: connect: connection refused
+
+E0124 09:49:40.921603   25961 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp 127.0.0.1:8080: connect: connection refused
+
+E0124 09:49:40.925378   25961 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp 127.0.0.1:8080: connect: connection refused
+
+The connection to the server localhost:8080 was refused - did you specify the right host or port?
+
+Честно у меня горит очат)))
