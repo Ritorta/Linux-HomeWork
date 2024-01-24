@@ -18,6 +18,7 @@ Google-doc HomeWork#5 Containerization - Урок 5. Docker Compose и Docker Sw
 version: '3.9'
 
 services:
+
      db:
        image: mariadb:10.10.2
        restart: always
@@ -30,8 +31,6 @@ services:
        ports:
           6080:8080
 
-networks:
-  app-dk-1:
 
 
 2. Далее необходимо создать 3 сервиса в каждом окружении (dev, prod, lab).
@@ -44,8 +43,9 @@ networks:
 version: '3.9'
 
 services:
+
   db:
-    image: mysql:8.3.0
+    image: mysql
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: 12345
@@ -54,7 +54,7 @@ services:
     image: phpmyadmin/phpmyadmin
     restart: always
     ports:
-       80:81
+       80:80
     environment:
       MYSQL_ROOT_PASSWORD: 12345
 
@@ -63,8 +63,9 @@ services:
 version: '3.9'
 
 services:
+
   db:
-    image: mysql:8.3.0
+    image: mysql:latest
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: 12345
@@ -73,7 +74,7 @@ services:
     image: nginx:latest
     restart: always
     ports:
-       80:82
+       80:80
     volumes:
     	./src:/usr/share/nginx/html
     links: 
@@ -83,6 +84,7 @@ services:
 
 version: '3.9'
 services:
+
      db:
        image: mariadb:10.10.2
        restart: always
@@ -145,6 +147,7 @@ Swarm будет следить за состоянием контейнера �
 version: '3.9'
 
 services:
+
      db:
        image: mariadb:10.10.2
        restart: always
@@ -199,6 +202,7 @@ services:
 version: '3.9'
 
 services:
+
   db:
     image: mysql
     environment:
@@ -517,3 +521,5 @@ E0124 09:49:40.925378   25961 memcache.go:265] couldn't get current server API g
 The connection to the server localhost:8080 was refused - did you specify the right host or port?
 
 Честно у меня горит очаг)))
+
+https://www.dmosk.ru/instruktions.php?object=kubernetes-ubuntu&ysclid=lrrgidhwwt654702078
