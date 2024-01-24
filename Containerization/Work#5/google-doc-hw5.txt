@@ -340,9 +340,7 @@ fox@node-3:~$ sudo cat /etc/docker/daemon.json
 
 9.6.1 Предварительная настройка для Kubernetes
 
-В общем если у вас нет белого(статического) IP и физических нод, готовьтесь к наказанию и испытаю своих нервов.
-
-Первое дать имена хостам, по желанию вот этой командой:
+Первое дать имена хостам этой командой:
 
 fox@love-linux:~$ sudo hostnamectl set-hostname master-node
 
@@ -350,11 +348,11 @@ fox@love-linux:~$ sudo hostnamectl set-hostname master-node
 
 fox@love-linux:~$ sudo nano /etc/hosts
 
-В приведённой ниже строчки написано имя вашего хоста а напротив него должен быть прописать IP вашей сети, 
-это будет IP нашего конкнетного узла на каждой машине нужно назначить свой.
+Добавить ниже подобную строку где IP ваш статический IP и имя вашего хоста. 
 Обращаю конкретное внимание, что с динамическим IP Kubernetes работать не будет, IP должен быть статическим!
 
 192.168.56.104	love-linux 
+
 
 (IP можно посмотреть командой "ip addr" или "ip a")
 
@@ -467,8 +465,15 @@ fox@love-linux:/etc/systemd/system/kubelet.service.d$ sudo nano 10-kubeadm.conf
 9.7 Настройка и создание кластера  Kubernetes
 
 Выполняем команду для начальной настройки и подготовки узла:
+Параметр --apiserver-advertise-address отвечает за то, по какому IP адресу будет доступен apiserver.
+Без него будет использоваться IP адрес сетевого адаптера по умолчанию, которым является NAT, 
+и мы не сможем присоединить узлы к master узлу. 
+Параметр --pod-network-cidr указывает подсеть, в которой подам будут выделяться виртуальные IP адреса внутри кластера.
+Главное, чтобы эта подсеть не пересекалась с другими подсетями, используемыми виртуальными машинами.
 
-sudo kubeadm init --pod-network-cidr=10.244.0.0/16
+sudo kubeadm init \
+	--apiserver-advertise-address=192.168.10.10 \ 
+  --pod-network-cidr=10.10.0.0/16
 
 Ключ --pod-network-cidr задает адрес внутренней подсети. 10.244.0.0/16 — значение по умолчанию.
 
@@ -476,9 +481,7 @@ sudo kubeadm init --pod-network-cidr=10.244.0.0/16
 
 Then you can join any number of worker nodes by running the following on each as root:
 
-kubeadm join 10.0.2.15:6443 --token 8w5ufa.bn2igbv71n9hlcjn \
-
-	--discovery-token-ca-cert-hash sha256:72b5256d24b0a3dc9c2f1b4cc817e3882278448e3dab950d00498ccb578d5c09 
+kubeadm join 10.0.2.15:6443 --token....
 
 Создадим переменную окружения KUBECONFIG:
 
@@ -494,32 +497,70 @@ export KUBECONFIG=/etc/kubernetes/admin.conf
 
 Посмотреть список узлов кластера можно командой:
 
-kubectl get nodes
+sudo kubectl get nodes
 
 Также выполним установку CNI (сетевой интерфейс контейнеров):
 
-kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+sudo kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 
-9.8 
+9.8 Подключение рабочих нод
 
-На рабочей ноде выполняем команду kubeadm join, полученную при настройке мастер-ноды. После этого введем на мастер-ноде приверив что всё подключилось:
+Данная команда позволит ещё раз вывести токен для подключения рабочих нод:
 
-sudo kubectl get nodes
+sudo kubeadm token create --print-join-command
 
-Программа засыпала меня очередной порцией ошибок:
+После чего копируем ключ на другие ноды и поключаем их.
 
-E0124 09:49:40.916775   25961 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp 127.0.0.1:8080: connect: connection refused
+Командой можно проверить список подключённых нод:
 
-E0124 09:49:40.917440   25961 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp 127.0.0.1:8080: connect: connection refused
+fox@love-linux:~$ sudo kubectl get nodes
 
-E0124 09:49:40.919730   25961 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp 127.0.0.1:8080: connect: connection refused
+NAME         STATUS   ROLES           AGE     VERSION
+love-linux   Ready    control-plane   29m     v1.28.2
+node-2       Ready    <none>          19m     v1.28.2
+node-3       Ready    <none>          4m57s   v1.28.2
 
-E0124 09:49:40.921603   25961 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp 127.0.0.1:8080: connect: connection refused
+9.9 Создание пода
 
-E0124 09:49:40.925378   25961 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp 127.0.0.1:8080: connect: connection refused
+Поды создаются командой kubectl:
 
-The connection to the server localhost:8080 was refused - did you specify the right host or port?
+fox@love-linux:~$ sudo kubectl run nginx --image=nginx:latest --port=80
 
-Честно у меня горит очаг)))
+pod/nginx created
+
+Чтобы получить сетевой доступ к созданному поду, создаем port-forward следующей командой:
+
+kubectl port-forward nginx --address 0.0.0.0 8888:80
+
+
+Поды не поднимаются, сил моих больше нет на эту программу лучше пользуйтесь Docker там всё отлично работает и без кучи плясок с бубном.
+
+
+
+And the soution is to edit /etc/containerd/config.toml to have:
+
+version = 2
+[plugins]
+  [plugins."io.containerd.grpc.v1.cri"]
+   [plugins."io.containerd.grpc.v1.cri".containerd]
+      [plugins."io.containerd.grpc.v1.cri".containerd.runtimes]
+        [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
+          runtime_type = "io.containerd.runc.v2"
+          [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
+            SystemdCgroup = true
+
+Then restart the containerd service:
+
+sudo systemctl restart containerd
+
+sudo kubeadm reset
+
+sudo kubeadm init
 
 https://www.dmosk.ru/instruktions.php?object=kubernetes-ubuntu&ysclid=lrrgidhwwt654702078
+
+https://github.com/kubernetes/kubeadm/issues/2833?ysclid=lrrib6a3nc288839223
+
+https://habr.com/ru/articles/530352/
+
+https://habr.com/ru/articles/542042/
